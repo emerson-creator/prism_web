@@ -5,16 +5,17 @@ import Link from "next/link";
 import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-  { label: "Nuevo", href: "/nuevo" },
-  { label: "Catálogo", href: "/catalogo" },
-  { label: "Colecciones", href: "/colecciones" },
-  { label: "Sobre Prism", href: "/nosotros" },
+  { label: "New", href: "/new" },
+  { label: "Catalog", href: "/catalog" },
+  { label: "Collections", href: "/collections" },
+  { label: "About Prism", href: "/us" },
 ];
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const cartCount = 2;
+  const isAuthenticated = true; // TODO: Replace with actual authentication logic
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
