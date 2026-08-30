@@ -56,19 +56,24 @@ export interface RegisterPayload {
 }
 
 // --- Cart ---
-// Shape preliminar; ajustar en cuanto confirmes GET /cart real.
+// Shape real, tomado de CartService (Prisma): el campo es `cartItems`,
+// no `items`, y no hay `total` en la respuesta — se calcula en el front.
+
 export interface CartItem {
-  id: string; // id del item dentro del carrito (para PATCH/DELETE /cart/items/{itemId})
+  id: string; // id del CartItem, para PATCH/DELETE /cart/items/{itemId}
+  cartId: string;
   productId: string;
-  product: Product;
   quantity: number;
-  unitPrice: number;
+  product: Product;
 }
 
 export interface Cart {
   id: string;
-  items: CartItem[];
-  total: number;
+  userId: string;
+  checkedOut: boolean;
+  createdAt: string;
+  updatedAt: string;
+  cartItems: CartItem[];
 }
 
 export interface AddCartItemPayload {

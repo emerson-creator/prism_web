@@ -16,8 +16,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Prism | Tu tienda online",
-  description: "Ecommerce hecho con Next.js",
+  title: "Prism | Ecommerce",
+  description: "Ecommerce made with Next.js",
 };
 
 export default function RootLayout({

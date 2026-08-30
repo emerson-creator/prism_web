@@ -11,6 +11,14 @@ import type {
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
+/** Error específico para 401, así el UI puede reaccionar distinto (ej. mostrar login). */
+export class UnauthenticatedError extends Error {
+  constructor(message = "User not authenticated") {
+    super(message);
+    this.name = "UnauthenticatedError";
+  }
+}
+
 /**
  * Wrapper central para todas las llamadas a la API.
  * Adjunta el accessToken si existe, y lanza un Error legible
@@ -27,9 +35,12 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
-    // Si tu backend usa cookies para el carrito de invitado, esto es necesario:
     credentials: "include",
   });
+
+  if (res.status === 401) {
+    throw new UnauthenticatedError();
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);
@@ -77,8 +88,8 @@ export function logout() {
 }
 
 // --- Cart ---
-// El carrito no requiere login (confirmado), probablemente usa
-// una cookie de sesión propia del backend gracias a credentials: "include".
+// Requiere estar autenticado (JwtAuthGuard a nivel de controller).
+// Si no hay accessToken válido, request() lanza UnauthenticatedError.
 
 export function fetchCart() {
   return request<Cart>("/cart");
