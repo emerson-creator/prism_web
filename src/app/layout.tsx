@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
+import { Header } from "@/components/modules/landing/Header";
+import { Footer } from "@/components/modules/landing/Footer";
+import { Providers } from "@/components/modules/auth/Providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,9 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className="font-sans bg-background text-foreground antialiased">
-        {children}
+        <Providers>
+          <Header />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
