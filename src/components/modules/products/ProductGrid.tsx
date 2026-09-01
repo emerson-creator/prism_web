@@ -6,10 +6,10 @@ export function ProductGrid({ products }: { products: Product[] }) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <p className="text-[15px] font-medium text-foreground">
-          No hay productos por aquí todavía
+          No products here yet
         </p>
         <p className="mt-1 text-[13px] text-muted-foreground">
-          Vuelve pronto, estamos preparando el catálogo.
+          Come back soon, we&apos;re preparing the catalog.
         </p>
       </div>
     );

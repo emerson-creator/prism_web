@@ -29,7 +29,7 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <Link href={`/productos/${product.id}`} className="group flex flex-col">
+    <Link href={`/products/${product.id}`} className="group flex flex-col">
       <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
         {product.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
