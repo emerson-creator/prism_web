@@ -80,3 +80,93 @@ export interface AddCartItemPayload {
   productId: string;
   quantity: number;
 }
+
+// --- Checkout / Orders ---
+
+/**
+ * The form collects a structured address for a better UX, but the
+ * backend's CheckoutDto stores `shippingAddress` as a single string
+ * (confirmed from CartService/OrdersService — it's persisted and read
+ * back as plain text, not a nested object). We flatten this shape into
+ * one string in api.ts's checkoutCart() before sending it.
+ */
+export interface ShippingAddress {
+  fullName: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone?: string;
+}
+
+/** What actually goes over the wire to POST /cart/checkout. */
+export interface CheckoutPayload {
+  shippingAddress: string;
+}
+
+export interface OrderItem {
+  id: string;
+  productId: string;
+  productName?: string; // present when read back via OrdersService.formatOrderResponse
+  quantity: number;
+  price: number;
+  subtotal?: number;
+}
+
+export type OrderStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "CANCELED";
+
+export interface Order {
+  id: string;
+  userId: string;
+  cartId?: string;
+  status?: OrderStatus; // present on orders read back via OrdersService
+  totalAmount: number;
+  total: number;
+  shippingAddress: string;
+  orderItems: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// --- Payments (Stripe) ---
+
+export interface CreatePaymentIntentPayload {
+  orderId: string;
+  currency?: string;
+  description?: string;
+  // NOTE: no `amount` here — PaymentsService always computes it
+  // server-side from order.total, ignoring any client-provided value.
+}
+
+export interface CreatePaymentIntentData {
+  clientSecret: string;
+  paymentId: string;
+}
+
+export interface ConfirmPaymentPayload {
+  paymentIntentId: string;
+  orderId: string;
+}
+
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | string;
+
+export interface Payment {
+  id: string;
+  orderId: string;
+  amount: number;
+  userId: string;
+  currency: string;
+  status: PaymentStatus;
+  paymentMethod: string | null;
+  transactionId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Generic envelope the Payments endpoints wrap their data in. */
+export interface ApiEnvelope<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
