@@ -1,11 +1,18 @@
 import type {
   AddCartItemPayload,
+  ApiEnvelope,
   AuthResponse,
   Cart,
+  ConfirmPaymentPayload,
+  CreatePaymentIntentData,
+  CreatePaymentIntentPayload,
   LoginPayload,
+  Order,
+  Payment,
   Product,
   ProductsResponse,
   RegisterPayload,
+  ShippingAddress,
 } from "./types";
 
 const API_URL =
@@ -13,7 +20,7 @@ const API_URL =
 
 /** Error específico para 401, así el UI puede reaccionar distinto (ej. mostrar login). */
 export class UnauthenticatedError extends Error {
-  constructor(message = "User not authenticated") {
+  constructor(message = "Debes iniciar sesión") {
     super(message);
     this.name = "UnauthenticatedError";
   }
@@ -117,4 +124,50 @@ export function removeCartItem(itemId: string) {
 
 export function clearCart() {
   return request<void>("/cart", { method: "DELETE" });
+}
+
+/**
+ * Flattens the structured form address into the single string the
+ * backend actually stores (CheckoutDto.shippingAddress is plain text).
+ */
+function formatShippingAddress(address: ShippingAddress): string {
+  const parts = [
+    address.fullName,
+    address.street,
+    `${address.city}, ${address.state} ${address.zipCode}`,
+    address.country,
+    address.phone ? `Phone: ${address.phone}` : null,
+  ].filter(Boolean);
+  return parts.join(" — ");
+}
+
+export function checkoutCart(address: ShippingAddress) {
+  return request<Order>("/cart/checkout", {
+    method: "POST",
+    body: JSON.stringify({ shippingAddress: formatShippingAddress(address) }),
+  });
+}
+
+// --- Payments ---
+// These endpoints wrap their response in { success, message, data }.
+// NOTE: createPaymentIntent does NOT send `amount` — the backend always
+// computes it server-side from order.total, ignoring any client value.
+
+export async function createPaymentIntent(payload: CreatePaymentIntentPayload) {
+  const res = await request<ApiEnvelope<CreatePaymentIntentData>>(
+    "/payments/create-intent",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+  );
+  return res.data;
+}
+
+export async function confirmPayment(payload: ConfirmPaymentPayload) {
+  const res = await request<ApiEnvelope<Payment>>("/payments/confirm", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return res.data;
 }
