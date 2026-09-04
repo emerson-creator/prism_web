@@ -64,10 +64,15 @@ async function refreshAccessToken(): Promise<string> {
     const refreshToken = getStoredToken("refreshToken");
     if (!refreshToken) throw new UnauthenticatedError();
 
+    // RefreshTokenGuard expects the refresh token as a Bearer header,
+    // not in the body — same pattern as any other protected endpoint,
+    // just validated against the refresh token instead of the access one.
     const res = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${refreshToken}`,
+      },
       credentials: "include",
     });
 
@@ -80,15 +85,12 @@ async function refreshAccessToken(): Promise<string> {
       throw new UnauthenticatedError();
     }
 
-    // ASSUMPTION: /auth/refresh returns at least a new accessToken, and
-    // possibly a rotated refreshToken too (common pattern). Adjust here
-    // if your backend's actual response shape differs.
-    const data: { accessToken: string; refreshToken?: string } =
+    // authService.refresh() returns the same AuthResponseDto shape as
+    // login/register: { accessToken, refreshToken, user }.
+    const data: { accessToken: string; refreshToken: string } =
       await res.json();
     localStorage.setItem("accessToken", data.accessToken);
-    if (data.refreshToken) {
-      localStorage.setItem("refreshToken", data.refreshToken);
-    }
+    localStorage.setItem("refreshToken", data.refreshToken);
     return data.accessToken;
   })();
 
