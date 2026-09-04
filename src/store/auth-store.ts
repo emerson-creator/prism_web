@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import * as api from "@/libs/api";
+import { onSessionExpired } from "@/libs/api";
 import type { LoginPayload, RegisterPayload, User } from "@/libs/types";
 
 interface AuthState {
@@ -40,6 +41,11 @@ export const useAuthStore = create<AuthState>((set) => ({
    */
   hydrate: () => {
     if (typeof window === "undefined") return;
+
+    // Listen once for a forced session expiry (silent refresh failed
+    // somewhere in api.ts) and clear the in-memory user to match.
+    onSessionExpired(() => set({ user: null }));
+
     try {
       const raw = localStorage.getItem("user");
       const token = localStorage.getItem("accessToken");
