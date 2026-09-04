@@ -1,12 +1,17 @@
+import { Hero } from "@/components/modules/landing/Hero";
+import { FeaturedCollections } from "@/components/modules/landing/FeaturedCollections";
+import { FeaturedProducts } from "@/components/modules/landing/FeaturedProducts";
+import { TrustStrip } from "@/components/modules/landing/TrustStrip";
+import { Newsletter } from "@/components/modules/landing/Newsletter";
+
 export default function Home() {
   return (
-    <>
-      <main className="container mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold mb-4">Bienvenido a Prism Store</h2>
-        <p className="text-lg">
-          Explora nuestra tienda online y descubre productos increíbles.
-        </p>
-      </main>
-    </>
+    <main>
+      <Hero />
+      <FeaturedCollections />
+      <FeaturedProducts />
+      <TrustStrip />
+      <Newsletter />
+    </main>
   );
 }

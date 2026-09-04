@@ -5,6 +5,7 @@ export default function Field({
   onChange,
   error,
   autoComplete,
+  className,
 }: {
   label: string;
   type?: string;
@@ -12,9 +13,10 @@ export default function Field({
   onChange: (value: string) => void;
   error?: string;
   autoComplete?: string;
+  className?: string;
 }) {
   return (
-    <div>
+    <div className={className}>
       <label className="mb-1.5 block text-[13px] font-medium text-foreground">
         {label}
       </label>
