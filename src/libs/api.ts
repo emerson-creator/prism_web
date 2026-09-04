@@ -18,22 +18,97 @@ import type {
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 
-/** Error específico para 401, así el UI puede reaccionar distinto (ej. mostrar login). */
+/** Thrown when the user has no valid session at all (no token, or refresh also failed). */
 export class UnauthenticatedError extends Error {
-  constructor(message = "Debes iniciar sesión") {
+  constructor(message = "You need to sign in") {
     super(message);
     this.name = "UnauthenticatedError";
   }
 }
 
 /**
- * Wrapper central para todas las llamadas a la API.
- * Adjunta el accessToken si existe, y lanza un Error legible
- * en vez de dejar que falle en silencio.
+ * Fired when a refresh attempt fails for real (refresh token itself is
+ * invalid/expired). auth-store listens for this to clear its in-memory
+ * user, since api.ts intentionally doesn't import any store directly.
  */
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+const SESSION_EXPIRED_EVENT = "prism:session-expired";
+
+export function onSessionExpired(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(SESSION_EXPIRED_EVENT, callback);
+  return () => window.removeEventListener(SESSION_EXPIRED_EVENT, callback);
+}
+
+function emitSessionExpired() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+  }
+}
+
+function getStoredToken(name: "accessToken" | "refreshToken"): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(name);
+}
+
+/**
+ * Single-flight refresh: if multiple requests 401 around the same time,
+ * only one actual /auth/refresh call is made. Every caller awaits the
+ * same in-flight promise instead of racing separate refresh calls.
+ */
+let refreshPromise: Promise<string> | null = null;
+
+async function refreshAccessToken(): Promise<string> {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    const refreshToken = getStoredToken("refreshToken");
+    if (!refreshToken) throw new UnauthenticatedError();
+
+    const res = await fetch(`${API_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      // Refresh token itself is invalid/expired — no way to recover silently.
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+      emitSessionExpired();
+      throw new UnauthenticatedError();
+    }
+
+    // ASSUMPTION: /auth/refresh returns at least a new accessToken, and
+    // possibly a rotated refreshToken too (common pattern). Adjust here
+    // if your backend's actual response shape differs.
+    const data: { accessToken: string; refreshToken?: string } =
+      await res.json();
+    localStorage.setItem("accessToken", data.accessToken);
+    if (data.refreshToken) {
+      localStorage.setItem("refreshToken", data.refreshToken);
+    }
+    return data.accessToken;
+  })();
+
+  try {
+    return await refreshPromise;
+  } finally {
+    refreshPromise = null;
+  }
+}
+
+/**
+ * Central wrapper for every API call. Attaches the accessToken, and on
+ * a 401 tries a one-time silent refresh + retry before giving up.
+ */
+async function request<T>(
+  path: string,
+  options: RequestInit = {},
+  _isRetry = false,
+): Promise<T> {
+  const token = getStoredToken("accessToken");
 
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
@@ -46,15 +121,28 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   });
 
   if (res.status === 401) {
-    throw new UnauthenticatedError();
+    // Already retried once, or there was never a token to refresh from
+    // → this is a real "not authenticated" state, not a stale token.
+    if (_isRetry || !getStoredToken("refreshToken")) {
+      throw new UnauthenticatedError();
+    }
+
+    try {
+      await refreshAccessToken();
+    } catch {
+      throw new UnauthenticatedError();
+    }
+
+    // Retry the original request exactly once, with the new token.
+    return request<T>(path, options, true);
   }
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new Error(body?.message ?? `Error ${res.status} en ${path}`);
+    throw new Error(body?.message ?? `Error ${res.status} on ${path}`);
   }
 
-  // DELETE suele devolver 204 sin body
+  // DELETE usually returns 204 with no body
   if (res.status === 204) return undefined as T;
 
   return res.json();
