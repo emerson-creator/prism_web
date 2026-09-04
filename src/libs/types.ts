@@ -1,7 +1,12 @@
 // Tipos derivados de la respuesta real de la API (Swagger)
 
-export interface Product {
+export interface BaseEntity {
   id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Product extends BaseEntity {
   name: string;
   description: string;
   price: number;
@@ -9,8 +14,6 @@ export interface Product {
   sku: string;
   imageUrl: string | null;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
   categoryId: string;
   category: string;
 }
@@ -48,9 +51,7 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface RegisterPayload {
-  email: string;
-  password: string;
+export interface RegisterPayload extends LoginPayload {
   name: string;
   lastName: string;
 }
@@ -67,8 +68,7 @@ export interface CartItem {
   product: Product;
 }
 
-export interface Cart {
-  id: string;
+export interface Cart extends BaseEntity {
   userId: string;
   checkedOut: boolean;
   createdAt: string;
@@ -105,29 +105,40 @@ export interface CheckoutPayload {
   shippingAddress: string;
 }
 
-export interface OrderItem {
-  id: string;
+export interface OrderItem extends BaseEntity {
   productId: string;
-  productName?: string; // present when read back via OrdersService.formatOrderResponse
+  productName: string;
   quantity: number;
   price: number;
-  subtotal?: number;
+  subtotal: number;
 }
 
-export type OrderStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "CANCELED";
-
-export interface Order {
-  id: string;
+export interface Order extends BaseEntity {
+  orderNumber: string;
   userId: string;
-  cartId?: string;
-  status?: OrderStatus; // present on orders read back via OrdersService
-  totalAmount: number;
+  status: string;
   total: number;
   shippingAddress: string;
-  orderItems: OrderItem[];
-  createdAt: string;
-  updatedAt: string;
+  items: OrderItem[];
+  userEmail?: string;
+  userName?: string;
 }
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T | null;
+  message: string | null;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export type OrderApiResponse<T> = ApiResponse<T>;
+export type PaginatedOrderResponse = PaginatedResponse<Order>;
 
 // --- Payments (Stripe) ---
 
@@ -151,8 +162,7 @@ export interface ConfirmPaymentPayload {
 
 export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | string;
 
-export interface Payment {
-  id: string;
+export interface Payment extends BaseEntity {
   orderId: string;
   amount: number;
   userId: string;
@@ -160,13 +170,7 @@ export interface Payment {
   status: PaymentStatus;
   paymentMethod: string | null;
   transactionId: string | null;
-  createdAt: string;
-  updatedAt: string;
 }
 
 /** Generic envelope the Payments endpoints wrap their data in. */
-export interface ApiEnvelope<T> {
-  success: boolean;
-  message?: string;
-  data: T;
-}
+export type ApiEnvelope<T> = ApiResponse<T>;

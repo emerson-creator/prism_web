@@ -1,6 +1,6 @@
 import type {
   AddCartItemPayload,
-  ApiEnvelope,
+  ApiResponse,
   AuthResponse,
   Cart,
   ConfirmPaymentPayload,
@@ -244,7 +244,7 @@ export function checkoutCart(address: ShippingAddress) {
 // computes it server-side from order.total, ignoring any client value.
 
 export async function createPaymentIntent(payload: CreatePaymentIntentPayload) {
-  const res = await request<ApiEnvelope<CreatePaymentIntentData>>(
+  const res = await request<ApiResponse<CreatePaymentIntentData>>(
     "/payments/create-intent",
     {
       method: "POST",
@@ -255,7 +255,7 @@ export async function createPaymentIntent(payload: CreatePaymentIntentPayload) {
 }
 
 export async function confirmPayment(payload: ConfirmPaymentPayload) {
-  const res = await request<ApiEnvelope<Payment>>("/payments/confirm", {
+  const res = await request<ApiResponse<Payment>>("/payments/confirm", {
     method: "POST",
     body: JSON.stringify(payload),
   });
