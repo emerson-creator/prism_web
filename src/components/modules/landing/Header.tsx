@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, ShoppingBag, User, Menu, X, LogOut } from "lucide-react";
+import {
+  Search,
+  ShoppingBag,
+  User,
+  Menu,
+  X,
+  LogOut,
+  Package,
+} from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartCount } from "@/store/cart-store";
 import PrismMark from "./Logo";
@@ -115,6 +123,27 @@ export function Header() {
                       {user?.email}
                     </p>
                   </div>
+
+                  <Link
+                    href="/orders"
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                  >
+                    <Package className="h-[15px] w-[15px]" strokeWidth={1.75} />
+                    My orders
+                  </Link>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                  >
+                    <User className="h-[15px] w-[15px]" strokeWidth={1.75} />
+                    My profile
+                  </Link>
+
+                  <div className="border-t border-border/70 my-1" />
+
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -177,13 +206,29 @@ export function Header() {
           ))}
 
           {isAuthenticated ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="py-3 text-left text-[15px] font-medium text-foreground/90"
-            >
-              Sign out
-            </button>
+            <>
+              <Link
+                href="/orders"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+              >
+                My orders
+              </Link>
+              <Link
+                href="/profile"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+              >
+                My profile
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="py-3 text-left text-[15px] font-medium text-foreground/90"
+              >
+                Sign out
+              </button>
+            </>
           ) : (
             <Link
               href="/login"
