@@ -1,12 +1,7 @@
 // Tipos derivados de la respuesta real de la API (Swagger)
 
-export interface BaseEntity {
+export interface Product {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Product extends BaseEntity {
   name: string;
   description: string;
   price: number;
@@ -14,6 +9,8 @@ export interface Product extends BaseEntity {
   sku: string;
   imageUrl: string | null;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
   categoryId: string;
   category: string;
 }
@@ -51,7 +48,9 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface RegisterPayload extends LoginPayload {
+export interface RegisterPayload {
+  email: string;
+  password: string;
   name: string;
   lastName: string;
 }
@@ -68,7 +67,8 @@ export interface CartItem {
   product: Product;
 }
 
-export interface Cart extends BaseEntity {
+export interface Cart {
+  id: string;
   userId: string;
   checkedOut: boolean;
   createdAt: string;
@@ -105,40 +105,29 @@ export interface CheckoutPayload {
   shippingAddress: string;
 }
 
-export interface OrderItem extends BaseEntity {
+export interface OrderItem {
+  id: string;
   productId: string;
-  productName: string;
+  productName?: string; // present when read back via OrdersService.formatOrderResponse
   quantity: number;
   price: number;
-  subtotal: number;
+  subtotal?: number;
 }
 
-export interface Order extends BaseEntity {
-  orderNumber: string;
+export type OrderStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "CANCELED";
+
+export interface Order {
+  id: string;
   userId: string;
-  status: string;
+  cartId?: string;
+  status?: OrderStatus; // present on orders read back via OrdersService
+  totalAmount: number;
   total: number;
   shippingAddress: string;
-  items: OrderItem[];
-  userEmail?: string;
-  userName?: string;
+  orderItems: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
 }
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T | null;
-  message: string | null;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
-export type OrderApiResponse<T> = ApiResponse<T>;
-export type PaginatedOrderResponse = PaginatedResponse<Order>;
 
 // --- Payments (Stripe) ---
 
@@ -162,7 +151,8 @@ export interface ConfirmPaymentPayload {
 
 export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | string;
 
-export interface Payment extends BaseEntity {
+export interface Payment {
+  id: string;
   orderId: string;
   amount: number;
   userId: string;
@@ -170,7 +160,60 @@ export interface Payment extends BaseEntity {
   status: PaymentStatus;
   paymentMethod: string | null;
   transactionId: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-/** Generic envelope the Payments endpoints wrap their data in. */
-export type ApiEnvelope<T> = ApiResponse<T>;
+/** Generic envelope the Payments and Orders endpoints wrap their data in. */
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T | null;
+  message: string | null;
+}
+
+// --- Order history (GET /orders/my-orders, GET /orders/:id) ---
+// This is a DIFFERENT shape from the `Order` above (which is what
+// POST /cart/checkout returns right after checkout). This one is the
+// "read" view built by OrdersService.formatOrderResponse(): it uses
+// `items` instead of `orderItems`, adds `orderNumber`, and has no
+// `totalAmount`/`cartId`. Kept as separate types to avoid conflating
+// the two responses.
+
+export interface OrderHistoryItem {
+  id: string;
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderSummary {
+  id: string;
+  orderNumber: string;
+  userId: string;
+  status: OrderStatus;
+  total: number;
+  shippingAddress: string;
+  items: OrderHistoryItem[];
+  createdAt: string;
+  updatedAt: string;
+  userEmail?: string;
+  userName?: string;
+}
+
+export interface PaginatedOrders {
+  data: OrderSummary[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface OrdersQuery {
+  page?: number;
+  limit?: number;
+  status?: OrderStatus;
+  search?: string;
+}

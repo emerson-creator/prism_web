@@ -8,6 +8,9 @@ import type {
   CreatePaymentIntentPayload,
   LoginPayload,
   Order,
+  OrdersQuery,
+  OrderSummary,
+  PaginatedOrders,
   Payment,
   Product,
   ProductsResponse,
@@ -259,5 +262,28 @@ export async function confirmPayment(payload: ConfirmPaymentPayload) {
     method: "POST",
     body: JSON.stringify(payload),
   });
+  return res.data;
+}
+
+// --- Order history ---
+// GET /orders/my-orders and GET /orders/:id both wrap their data in
+// { success, data, message } via OrderApiResponseDto.
+
+export async function fetchMyOrders(params?: OrdersQuery) {
+  const query = new URLSearchParams();
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+  if (params?.status) query.set("status", params.status);
+  if (params?.search) query.set("search", params.search);
+  const qs = query.toString();
+
+  const res = await request<ApiResponse<PaginatedOrders>>(
+    `/orders/my-orders${qs ? `?${qs}` : ""}`,
+  );
+  return res.data;
+}
+
+export async function fetchOrderById(id: string) {
+  const res = await request<ApiResponse<OrderSummary>>(`/orders/${id}`);
   return res.data;
 }
