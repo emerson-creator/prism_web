@@ -14,6 +14,8 @@ interface AuthState {
   login: (payload: LoginPayload) => Promise<boolean>;
   register: (payload: RegisterPayload) => Promise<boolean>;
   logout: () => Promise<void>;
+  /** Syncs the in-memory + persisted user after a profile edit elsewhere. */
+  updateUser: (user: User) => void;
 }
 
 function persistSession(accessToken: string, refreshToken: string, user: User) {
@@ -99,5 +101,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
     clearSession();
     set({ user: null });
+  },
+
+  updateUser: (user) => {
+    localStorage.setItem("user", JSON.stringify(user));
+    set({ user });
   },
 }));
