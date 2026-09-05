@@ -3,10 +3,12 @@ import type {
   ApiResponse,
   AuthResponse,
   Cart,
+  ChangePasswordPayload,
   ConfirmPaymentPayload,
   CreatePaymentIntentData,
   CreatePaymentIntentPayload,
   LoginPayload,
+  MessageResponse,
   Order,
   OrdersQuery,
   OrderSummary,
@@ -16,6 +18,8 @@ import type {
   ProductsResponse,
   RegisterPayload,
   ShippingAddress,
+  UpdateProfilePayload,
+  User,
 } from "./types";
 
 const API_URL =
@@ -286,4 +290,25 @@ export async function fetchMyOrders(params?: OrdersQuery) {
 export async function fetchOrderById(id: string) {
   const res = await request<ApiResponse<OrderSummary>>(`/orders/${id}`);
   return res.data;
+}
+
+// --- User profile ---
+// GET/PATCH /users/profile return the User shape directly (no envelope).
+
+export function fetchProfile() {
+  return request<User>("/users/profile");
+}
+
+export function updateProfile(payload: UpdateProfilePayload) {
+  return request<User>("/users/profile", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function changePassword(payload: ChangePasswordPayload) {
+  return request<MessageResponse>("/users/profile/password", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }

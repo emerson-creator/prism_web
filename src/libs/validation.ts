@@ -23,3 +23,9 @@ export function validateZipCode(value: string): string | null {
   if (value.trim().length < 3) return "Enter a valid ZIP / postal code";
   return null;
 }
+
+export function validateNewPassword(value: string): string | null {
+  if (!value) return "New password is required";
+  if (value.length < 6) return "Password must be at least 6 characters";
+  return null;
+}

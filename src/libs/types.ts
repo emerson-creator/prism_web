@@ -27,14 +27,16 @@ export interface ProductsResponse {
   meta: ProductsMeta;
 }
 
-export type Role = "ADMIN" | "USER" | "CUSTOMER"; // ajustar si hay más roles
+export type Role = "ADMIN" | "USER";
 
 export interface User {
   id: string;
   email: string;
-  name: string;
-  lastName: string;
+  name: string | null;
+  lastName: string | null;
   Role: Role;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuthResponse {
@@ -216,4 +218,26 @@ export interface OrdersQuery {
   limit?: number;
   status?: OrderStatus;
   search?: string;
+}
+
+// --- User profile ---
+// GET/PATCH /users/profile return the User shape directly, no envelope.
+// Deliberately excludes UpdateUserDto's `role` and `password` fields —
+// changing your own role or password without re-entering it is bad
+// practice even though the backend DTO technically allows it. Password
+// changes go through ChangePasswordDto instead (requires current password).
+
+export interface UpdateProfilePayload {
+  name?: string;
+  lastName?: string;
+  email?: string;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface MessageResponse {
+  message: string;
 }
