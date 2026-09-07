@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { LayoutDashboard, Package, Tag } from "lucide-react";
+import { LayoutDashboard, Package, Tag, Users } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard, exact: true },
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Categories", href: "/admin/categories", icon: Tag },
+  { label: "Users", href: "/admin/users", icon: Users },
 ];
 
 export default function AdminLayout({
