@@ -295,3 +295,14 @@ export interface CreateCategoryPayload {
 }
 
 export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;
+
+// --- Admin: Users ---
+// PATCH /users/:id (admin only) reuses UpdateUserDto, which the backend
+// lowercases as `role` (unlike the read model's `Role` capitalized field).
+
+export type AdminUpdateUserPayload = Partial<{
+  name: string;
+  lastName: string;
+  email: string;
+  role: Role;
+}>;

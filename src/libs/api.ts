@@ -1,5 +1,6 @@
 import type {
   AddCartItemPayload,
+  AdminUpdateUserPayload,
   ApiResponse,
   AuthResponse,
   Cart,
@@ -416,4 +417,22 @@ export function updateCategory(id: string, payload: UpdateCategoryPayload) {
 
 export function deleteCategory(id: string) {
   return request<MessageResponse>(`/categories/${id}`, { method: "DELETE" });
+}
+
+// --- Admin: Users ---
+// All three require JwtAuthGuard + Roles(ADMIN) on the backend.
+
+export function fetchAllUsers() {
+  return request<User[]>("/users");
+}
+
+export function adminUpdateUser(id: string, payload: AdminUpdateUserPayload) {
+  return request<User>(`/users/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function adminDeleteUser(id: string) {
+  return request<MessageResponse>(`/users/${id}`, { method: "DELETE" });
 }
