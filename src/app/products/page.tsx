@@ -1,5 +1,5 @@
 import { fetchProducts } from "@/libs/api";
-import { ProductGrid } from "@/components/modules/products/ProductGrid";
+import { ProductGrid } from "@/components/modules/product/ProductGrid";
 
 export const revalidate = 60; // revalida el catálogo cada 60s
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth-store";
 import { useApiFetch } from "@/libs/hooks/useApiFetch";
+import { ProfileSkeleton } from "@/components/modules/profile/ProfileSkeleton";
 import * as api from "@/libs/api";
 import {
   validateEmail,
@@ -41,11 +42,7 @@ export default function ProfilePage() {
   }
 
   if (!isHydrated || isLoading) {
-    return (
-      <main className="container mx-auto px-4 py-16 text-center text-[13px] text-muted-foreground">
-        Loading your profile…
-      </main>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (loadError || !profile) {

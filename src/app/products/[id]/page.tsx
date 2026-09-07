@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { fetchProductById } from "@/libs/api";
-import { AddToCartPanel } from "@/components/modules/products/AddToCartPanel";
+import { AddToCartPanel } from "@/components/modules/product/AddToCartPanel";
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",

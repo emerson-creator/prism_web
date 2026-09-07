@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useApiFetch } from "@/libs/hooks/useApiFetch";
+import { OrderDetailSkeleton } from "@/components/modules/order/OrderDetailSkeleton";
 import * as api from "@/libs/api";
 import type { OrderStatus } from "@/libs/types";
 
@@ -51,11 +52,7 @@ export default function OrderDetailPage() {
   }
 
   if (!isHydrated || isLoading) {
-    return (
-      <main className="container mx-auto px-4 py-16 text-center text-[13px] text-muted-foreground">
-        Loading order…
-      </main>
-    );
+    return <OrderDetailSkeleton />;
   }
 
   if (error || !order) {
@@ -73,7 +70,7 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <main className="container mx-auto max-w-2xl px-4 py-10">
+    <main className="container mx-auto max-w-2xl animate-fade-in px-4 py-10">
       <Link
         href="/orders"
         className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"

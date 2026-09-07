@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -42,8 +42,9 @@ export default function CheckoutPaymentPage() {
 
   if (isLoading && !paymentIntent) {
     return (
-      <main className="container mx-auto px-4 py-16 text-center text-[13px] text-muted-foreground">
-        Preparing payment…
+      <main className="container mx-auto flex flex-col items-center gap-3 px-4 py-16 text-center">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-foreground" />
+        <p className="text-[13px] text-muted-foreground">Preparing payment…</p>
       </main>
     );
   }
@@ -94,7 +95,8 @@ function PaymentForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
-  const canSubmit = Boolean(stripe && elements);
+
+  const canSubmit = useMemo(() => !!stripe && !!elements, [stripe, elements]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

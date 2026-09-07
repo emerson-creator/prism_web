@@ -20,21 +20,26 @@ export default function CheckoutSuccessPage() {
 
   return (
     <main className="container mx-auto flex flex-col items-center px-4 py-24 text-center">
-      <CheckCircle2 className="h-12 w-12 text-foreground" strokeWidth={1.5} />
-      <h1 className="mt-5 font-heading text-2xl font-semibold tracking-tight text-foreground">
-        Order confirmed
-      </h1>
-      <p className="mt-1.5 text-[13px] text-muted-foreground">
-        {order
-          ? `Order #${order.id.slice(0, 8)} is on its way.`
-          : "Thank you for your purchase."}
-      </p>
-      <Link
-        href="/products"
-        className="mt-8 flex h-11 items-center rounded-full bg-foreground px-6 text-[14px] font-medium text-background transition-opacity hover:opacity-90"
-      >
-        Continue shopping
-      </Link>
+      <CheckCircle2
+        className="h-12 w-12 animate-check-in text-foreground"
+        strokeWidth={1.5}
+      />
+      <div className="animate-fade-in [animation-delay:150ms]">
+        <h1 className="mt-5 font-heading text-2xl font-semibold tracking-tight text-foreground">
+          Order confirmed
+        </h1>
+        <p className="mt-1.5 text-[13px] text-muted-foreground">
+          {order
+            ? `Order #${order.id.slice(0, 8)} is on its way.`
+            : "Thank you for your purchase."}
+        </p>
+        <Link
+          href="/products"
+          className="mt-8 inline-flex h-11 items-center rounded-full bg-foreground px-6 text-[14px] font-medium text-background transition-opacity hover:opacity-90"
+        >
+          Continue shopping
+        </Link>
+      </div>
     </main>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth-store";
 import { useApiFetch } from "@/libs/hooks/useApiFetch";
+import { OrdersListSkeleton } from "@/components/modules/order/OrderListSkeleton";
 import * as api from "@/libs/api";
 import type { OrderStatus } from "@/libs/types";
 
@@ -50,11 +51,7 @@ export default function OrdersPage() {
   }
 
   if (!isHydrated || isLoading) {
-    return (
-      <main className="container mx-auto px-4 py-16 text-center text-[13px] text-muted-foreground">
-        Loading your orders…
-      </main>
-    );
+    return <OrdersListSkeleton />;
   }
 
   if (error) {
@@ -85,7 +82,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-10">
+    <main className="container mx-auto animate-fade-in px-4 py-10">
       <h1 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
         Your orders
       </h1>

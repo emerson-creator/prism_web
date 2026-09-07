@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Minus, Plus, X } from "lucide-react";
 import { useCartStore, useCartTotal } from "@/store/cart-store";
 import { useAuthStore } from "@/store/auth-store";
+import { CartSkeleton } from "@/components/modules/cart/CartSkeleton";
 import type { CartItem } from "@/libs/types";
 
 const currency = new Intl.NumberFormat("en-US", {
@@ -37,11 +38,7 @@ export default function CartPage() {
   }
 
   if (!isHydrated || (isLoading && !cart)) {
-    return (
-      <main className="container mx-auto px-4 py-16 text-center text-[13px] text-muted-foreground">
-        Loading your cart…
-      </main>
-    );
+    return <CartSkeleton />;
   }
 
   const items = cart?.cartItems ?? [];
@@ -66,7 +63,7 @@ export default function CartPage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-10">
+    <main className="container mx-auto animate-fade-in px-4 py-10">
       <h1 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
         Your cart
       </h1>
