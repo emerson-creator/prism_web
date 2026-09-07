@@ -10,11 +10,10 @@ import {
   Menu,
   X,
   LogOut,
-  Package,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartCount } from "@/store/cart-store";
-import PrismMark from "./Logo";
 
 const NAV_LINKS = [
   { label: "New", href: "/new" },
@@ -123,27 +122,6 @@ export function Header() {
                       {user?.email}
                     </p>
                   </div>
-
-                  <Link
-                    href="/orders"
-                    onClick={() => setAccountMenuOpen(false)}
-                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
-                  >
-                    <Package className="h-[15px] w-[15px]" strokeWidth={1.75} />
-                    My orders
-                  </Link>
-
-                  <Link
-                    href="/profile"
-                    onClick={() => setAccountMenuOpen(false)}
-                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
-                  >
-                    <User className="h-[15px] w-[15px]" strokeWidth={1.75} />
-                    My profile
-                  </Link>
-
-                  <div className="border-t border-border/70 my-1" />
-
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -152,6 +130,23 @@ export function Header() {
                     <LogOut className="h-[15px] w-[15px]" strokeWidth={1.75} />
                     Sign out
                   </button>
+
+                  {user?.Role === "ADMIN" && (
+                    <>
+                      <div className="border-t border-border/70 my-1" />
+                      <Link
+                        href="/admin"
+                        onClick={() => setAccountMenuOpen(false)}
+                        className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                      >
+                        <ShieldCheck
+                          className="h-[15px] w-[15px]"
+                          strokeWidth={1.75}
+                        />
+                        Admin panel
+                      </Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -206,29 +201,13 @@ export function Header() {
           ))}
 
           {isAuthenticated ? (
-            <>
-              <Link
-                href="/orders"
-                onClick={() => setMobileOpen(false)}
-                className="py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
-              >
-                My orders
-              </Link>
-              <Link
-                href="/profile"
-                onClick={() => setMobileOpen(false)}
-                className="py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
-              >
-                My profile
-              </Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="py-3 text-left text-[15px] font-medium text-foreground/90"
-              >
-                Sign out
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="py-3 text-left text-[15px] font-medium text-foreground/90"
+            >
+              Sign out
+            </button>
           ) : (
             <Link
               href="/login"
@@ -241,5 +220,55 @@ export function Header() {
         </nav>
       </div>
     </header>
+  );
+}
+
+/**
+ * Prism mark: a single stroke that splits into three colored
+ * beams — refraction as the brand's symbol. Monochrome at rest,
+ * reveals the spectrum on hover.
+ */
+function PrismMark() {
+  return (
+    <svg
+      width="26"
+      height="24"
+      viewBox="0 0 26 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0"
+    >
+      <path
+        d="M9 12L1 12"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        className="text-foreground/70 transition-opacity duration-300 group-hover:opacity-40"
+      />
+      <path
+        d="M9 3L16.5 12L9 21Z"
+        className="fill-foreground transition-colors duration-300 group-hover:fill-none"
+      />
+      <g className="opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <path
+          d="M16.5 12L25 6.5"
+          stroke="#6366f1"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+        <path
+          d="M16.5 12L25 12"
+          stroke="#ec4899"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+        <path
+          d="M16.5 12L25 17.5"
+          stroke="#f59e0b"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+        />
+      </g>
+    </svg>
   );
 }
