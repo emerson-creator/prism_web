@@ -241,3 +241,57 @@ export interface ChangePasswordPayload {
 export interface MessageResponse {
   message: string;
 }
+
+// --- Admin: Products (create/update) ---
+// Matches CreateProductDto / UpdateProductDto exactly. UpdateProductDto
+// is CreateProductDto's PartialType, so every field is optional there.
+
+export interface CreateProductPayload {
+  name: string;
+  description?: string;
+  price: number;
+  stock: number;
+  sku: string;
+  imageUrl?: string;
+  categoryId: string;
+  isActive?: boolean;
+}
+
+export type UpdateProductPayload = Partial<CreateProductPayload>;
+
+export interface UploadImageData {
+  url: string;
+  publicId: string;
+}
+
+// --- Admin: Categories ---
+// ASSUMPTION: CreateCategoryDto/CategoryResponseDto weren't shared, so
+// this is a reasonable guess based on the common `name`/`slug` pattern
+// seen elsewhere (e.g. GET /categories/slug/:slug exists). Adjust here
+// if the real DTO differs — this is the only place that needs to change.
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CategoriesMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CategoriesResponse {
+  data: Category[];
+  meta: CategoriesMeta;
+}
+
+export interface CreateCategoryPayload {
+  name: string;
+}
+
+export type UpdateCategoryPayload = Partial<CreateCategoryPayload>;

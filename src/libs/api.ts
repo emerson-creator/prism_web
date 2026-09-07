@@ -3,10 +3,14 @@ import type {
   ApiResponse,
   AuthResponse,
   Cart,
+  CategoriesResponse,
+  Category,
   ChangePasswordPayload,
   ConfirmPaymentPayload,
+  CreateCategoryPayload,
   CreatePaymentIntentData,
   CreatePaymentIntentPayload,
+  CreateProductPayload,
   LoginPayload,
   MessageResponse,
   Order,
@@ -18,7 +22,10 @@ import type {
   ProductsResponse,
   RegisterPayload,
   ShippingAddress,
+  UpdateCategoryPayload,
+  UpdateProductPayload,
   UpdateProfilePayload,
+  UploadImageData,
   User,
 } from "./types";
 
@@ -153,6 +160,47 @@ async function request<T>(
 
   // DELETE usually returns 204 with no body
   if (res.status === 204) return undefined as T;
+
+  return res.json();
+}
+
+/**
+ * Same auth/refresh handling as request(), but for multipart/form-data
+ * uploads — we must NOT set Content-Type ourselves, the browser needs
+ * to add the multipart boundary automatically.
+ */
+async function requestFormData<T>(
+  path: string,
+  formData: FormData,
+  _isRetry = false,
+): Promise<T> {
+  const token = getStoredToken("accessToken");
+
+  const res = await fetch(`${API_URL}${path}`, {
+    method: "POST",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: formData,
+    credentials: "include",
+  });
+
+  if (res.status === 401) {
+    if (_isRetry || !getStoredToken("refreshToken")) {
+      throw new UnauthenticatedError();
+    }
+    try {
+      await refreshAccessToken();
+    } catch {
+      throw new UnauthenticatedError();
+    }
+    return requestFormData<T>(path, formData, true);
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.message ?? `Error ${res.status} on ${path}`);
+  }
 
   return res.json();
 }
@@ -311,4 +359,61 @@ export function changePassword(payload: ChangePasswordPayload) {
     method: "PATCH",
     body: JSON.stringify(payload),
   });
+}
+
+// --- Admin: Products ---
+// All three require JwtAuthGuard + Roles(ADMIN) on the backend.
+
+export function createProduct(payload: CreateProductPayload) {
+  return request<Product>("/products", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateProduct(id: string, payload: UpdateProductPayload) {
+  return request<Product>(`/products/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteProduct(id: string) {
+  return request<void>(`/products/${id}`, { method: "DELETE" });
+}
+
+/** Uploads a product photo to Cloudinary via the backend; returns a URL to use as imageUrl. */
+export function uploadProductImage(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return requestFormData<UploadImageData>("/products/upload-image", formData);
+}
+
+// --- Admin: Categories ---
+// GET / is public; create/update/delete require ADMIN.
+
+export function fetchCategories(params?: { page?: number; limit?: number }) {
+  const query = new URLSearchParams();
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+  const qs = query.toString();
+  return request<CategoriesResponse>(`/categories${qs ? `?${qs}` : ""}`);
+}
+
+export function createCategory(payload: CreateCategoryPayload) {
+  return request<Category>("/categories", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateCategory(id: string, payload: UpdateCategoryPayload) {
+  return request<Category>(`/categories/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteCategory(id: string) {
+  return request<MessageResponse>(`/categories/${id}`, { method: "DELETE" });
 }
