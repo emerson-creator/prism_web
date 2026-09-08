@@ -122,6 +122,13 @@ export function Header() {
                       {user?.email}
                     </p>
                   </div>
+                  <Link
+                    href="/orders"
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="flex w-full items-center px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                  >
+                    My orders
+                  </Link>
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -201,13 +208,22 @@ export function Header() {
           ))}
 
           {isAuthenticated ? (
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="py-3 text-left text-[15px] font-medium text-foreground/90"
-            >
-              Sign out
-            </button>
+            <>
+              <Link
+                href="/orders"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+              >
+                My orders
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="py-3 text-left text-[15px] font-medium text-foreground/90"
+              >
+                Sign out
+              </button>
+            </>
           ) : (
             <Link
               href="/login"
