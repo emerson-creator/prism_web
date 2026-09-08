@@ -353,6 +353,19 @@ export async function fetchOrderById(id: string) {
   return res.data;
 }
 
+/**
+ * Cancels the current user's own order. Backend only allows this while
+ * status is PENDING (enforced server-side in OrdersService.cancel) —
+ * paid orders (PROCESSING+) are rejected with a 400, since cancelling
+ * those would require an actual Stripe refund, which isn't handled here.
+ */
+export async function cancelOrder(id: string) {
+  const res = await request<ApiResponse<OrderSummary>>(`/orders/${id}`, {
+    method: "DELETE",
+  });
+  return res.data;
+}
+
 // --- Admin: Orders ---
 // GET /orders/admin/all wraps its data the same way as my-orders
 // (OrderApiResponseDto<PaginatedOrderResponseDto>). Requires ADMIN role.
