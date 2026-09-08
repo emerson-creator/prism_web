@@ -208,10 +208,22 @@ async function requestFormData<T>(
 
 // --- Products ---
 
-export function fetchProducts(params?: { page?: number; limit?: number }) {
+export interface FetchProductsParams {
+  page?: number;
+  limit?: number;
+  category?: string; // matches by category NAME, not categoryId (confirmed via ProductsService.findAll)
+  search?: string; // matches name OR description, case-insensitive
+  isActive?: boolean;
+}
+
+export function fetchProducts(params?: FetchProductsParams) {
   const query = new URLSearchParams();
   if (params?.page) query.set("page", String(params.page));
   if (params?.limit) query.set("limit", String(params.limit));
+  if (params?.category) query.set("category", params.category);
+  if (params?.search) query.set("search", params.search);
+  if (params?.isActive !== undefined)
+    query.set("isActive", String(params.isActive));
   const qs = query.toString();
   return request<ProductsResponse>(`/products${qs ? `?${qs}` : ""}`);
 }
