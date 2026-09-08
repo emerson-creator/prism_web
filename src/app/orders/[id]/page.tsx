@@ -1,13 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useApiFetch } from "@/libs/hooks/useApiFetch";
 import { OrderDetailSkeleton } from "@/components/modules/order/OrderDetailSkeleton";
 import * as api from "@/libs/api";
-import type { OrderStatus } from "@/libs/types";
+import type { OrderStatus, OrderSummary } from "@/libs/types";
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -23,17 +24,44 @@ const dateFormat = new Intl.DateTimeFormat("en-US", {
 
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const isHydrated = useAuthStore((s) => s.isHydrated);
   const user = useAuthStore((s) => s.user);
 
   const {
-    data: order,
+    data: fetchedOrder,
     isLoading,
     error,
   } = useApiFetch(() => api.fetchOrderById(params.id), [params.id, user?.id], {
     enabled: isHydrated && !!user,
     fallbackError: "Could not load order",
   });
+
+  // Local copy so a successful cancel can update the badge/button
+  // immediately without waiting on a refetch.
+  const [order, setOrder] = useState<OrderSummary | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+
+  const activeOrder = order ?? fetchedOrder ?? null;
+
+  async function handleCancel() {
+    if (!activeOrder) return;
+    if (!confirm("Cancel this order? This cannot be undone.")) return;
+
+    setIsCancelling(true);
+    setCancelError(null);
+    try {
+      const updated = await api.cancelOrder(activeOrder.id);
+      if (updated) setOrder(updated);
+    } catch (err) {
+      setCancelError(
+        err instanceof Error ? err.message : "Could not cancel this order",
+      );
+    } finally {
+      setIsCancelling(false);
+    }
+  }
 
   if (isHydrated && !user) {
     return (
@@ -55,7 +83,7 @@ export default function OrderDetailPage() {
     return <OrderDetailSkeleton />;
   }
 
-  if (error || !order) {
+  if (error || !activeOrder) {
     return (
       <main className="container mx-auto flex flex-col items-center px-4 py-16 text-center">
         <p className="text-[14px] text-red-600">{error ?? "Order not found"}</p>
@@ -82,17 +110,17 @@ export default function OrderDetailPage() {
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight text-foreground">
-            Order #{order.orderNumber}
+            Order #{activeOrder.orderNumber}
           </h1>
           <p className="mt-1 text-[13px] text-muted-foreground">
-            Placed on {dateFormat.format(new Date(order.createdAt))}
+            Placed on {dateFormat.format(new Date(activeOrder.createdAt))}
           </p>
         </div>
-        <StatusBadge status={order.status} />
+        <StatusBadge status={activeOrder.status} />
       </div>
 
       <ul className="mt-8 divide-y divide-border rounded-2xl border border-border">
-        {order.items.map((item) => (
+        {activeOrder.items.map((item) => (
           <li
             key={item.id}
             className="flex items-center justify-between gap-4 p-4"
@@ -114,7 +142,7 @@ export default function OrderDetailPage() {
 
       <div className="mt-4 flex justify-between rounded-2xl border border-border p-4 text-[14px] font-semibold text-foreground">
         <span>Total</span>
-        <span>{currency.format(order.total)}</span>
+        <span>{currency.format(activeOrder.total)}</span>
       </div>
 
       <div className="mt-6">
@@ -122,9 +150,31 @@ export default function OrderDetailPage() {
           Shipping address
         </p>
         <p className="mt-1 text-[13px] text-muted-foreground">
-          {order.shippingAddress}
+          {activeOrder.shippingAddress}
         </p>
       </div>
+
+      {activeOrder.status === "PENDING" && (
+        <div className="mt-6 border-t border-border pt-6">
+          {cancelError && (
+            <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-[13px] text-red-600">
+              {cancelError}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={handleCancel}
+            disabled={isCancelling}
+            className="flex h-10 items-center gap-2 rounded-full border border-red-200 px-5 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
+          >
+            {isCancelling && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {isCancelling ? "Cancelling…" : "Cancel order"}
+          </button>
+          <p className="mt-2 text-[11.5px] text-muted-foreground">
+            You can cancel this order because it hasn&apos;t been processed yet.
+          </p>
+        </div>
+      )}
     </main>
   );
 }
