@@ -353,6 +353,23 @@ export async function fetchOrderById(id: string) {
   return res.data;
 }
 
+// --- Admin: Orders ---
+// GET /orders/admin/all wraps its data the same way as my-orders
+// (OrderApiResponseDto<PaginatedOrderResponseDto>). Requires ADMIN role.
+
+export async function fetchAllOrdersAdmin(params?: OrdersQuery) {
+  const query = new URLSearchParams();
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+  if (params?.status) query.set("status", params.status);
+  const qs = query.toString();
+
+  const res = await request<ApiResponse<PaginatedOrders>>(
+    `/orders/admin/all${qs ? `?${qs}` : ""}`,
+  );
+  return res.data;
+}
+
 // --- User profile ---
 // GET/PATCH /users/profile return the User shape directly (no envelope).
 
