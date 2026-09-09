@@ -24,6 +24,7 @@ import type {
   RegisterPayload,
   ShippingAddress,
   UpdateCategoryPayload,
+  UpdateOrderPayload,
   UpdateProductPayload,
   UpdateProfilePayload,
   UploadImageData,
@@ -380,6 +381,22 @@ export async function fetchAllOrdersAdmin(params?: OrdersQuery) {
   const res = await request<ApiResponse<PaginatedOrders>>(
     `/orders/admin/all${qs ? `?${qs}` : ""}`,
   );
+  return res.data;
+}
+
+/**
+ * Updates status/trackingNumber/notes on ANY order (admin only). The
+ * backend does not validate status transitions — enforce that in the
+ * UI using ORDER_STATUS_TRANSITIONS from lib/types.ts before calling this.
+ */
+export async function adminUpdateOrder(
+  id: string,
+  payload: UpdateOrderPayload,
+) {
+  const res = await request<ApiResponse<OrderSummary>>(`/orders/admin/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
   return res.data;
 }
 

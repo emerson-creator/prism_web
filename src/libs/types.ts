@@ -116,7 +116,13 @@ export interface OrderItem {
   subtotal?: number;
 }
 
-export type OrderStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "CANCELED";
+// Confirmed from schema.prisma's OrderStatus enum — NOT "COMPLETED".
+export type OrderStatus =
+  | "PENDING"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELED";
 
 export interface Order {
   id: string;
@@ -151,7 +157,8 @@ export interface ConfirmPaymentPayload {
   orderId: string;
 }
 
-export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | string;
+// Confirmed from schema.prisma's PaymentStatus enum.
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
 
 export interface Payment {
   id: string;
@@ -204,6 +211,8 @@ export interface OrderSummary {
   updatedAt: string;
   userEmail?: string;
   userName?: string;
+  trackingNumber?: string | null;
+  notes?: string | null;
 }
 
 export interface PaginatedOrders {
@@ -219,6 +228,41 @@ export interface OrdersQuery {
   status?: OrderStatus;
   search?: string;
 }
+
+// --- Admin: Order status management ---
+// Matches UpdateOrderDto exactly (status/trackingNumber/notes are all
+// optional and independently patchable).
+
+export interface UpdateOrderPayload {
+  status?: OrderStatus;
+  trackingNumber?: string;
+  notes?: string;
+}
+
+/**
+ * The backend does NOT validate status transitions (UpdateOrderDto
+ * accepts any OrderStatus at any time) — this map is a front-end-only
+ * business rule so the admin can't accidentally skip steps (e.g. jump
+ * straight from PENDING to SHIPPED without ever marking PROCESSING).
+ *
+ * CANCELED is only reachable from PENDING. Once an order reaches
+ * PROCESSING, stock has already been decremented and payment has
+ * already been captured — OrdersService.update() only flips the
+ * `status` field, it does NOT restore stock or issue a Stripe refund.
+ * Allowing CANCELED from PROCESSING here would let an admin silently
+ * create a real data inconsistency (money charged + stock gone, but
+ * the order says "canceled"). Don't re-add it without also building
+ * a real refund/restock flow on the backend.
+ *
+ * DELIVERED and CANCELED are terminal states.
+ */
+export const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  PENDING: ["PENDING", "PROCESSING", "CANCELED"],
+  PROCESSING: ["PROCESSING", "SHIPPED"],
+  SHIPPED: ["SHIPPED", "DELIVERED"],
+  DELIVERED: ["DELIVERED"],
+  CANCELED: ["CANCELED"],
+};
 
 // --- User profile ---
 // GET/PATCH /users/profile return the User shape directly, no envelope.
