@@ -11,6 +11,7 @@ import {
   X,
   LogOut,
   ShieldCheck,
+  ClipboardList,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useCartCount } from "@/store/cart-store";
@@ -125,8 +126,12 @@ export function Header() {
                   <Link
                     href="/orders"
                     onClick={() => setAccountMenuOpen(false)}
-                    className="flex w-full items-center px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
                   >
+                    <ClipboardList
+                      className="h-[15px] w-[15px]"
+                      strokeWidth={1.75}
+                    />
                     My orders
                   </Link>
                   <button
@@ -212,8 +217,12 @@ export function Header() {
               <Link
                 href="/orders"
                 onClick={() => setMobileOpen(false)}
-                className="py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+                className="flex items-center gap-2 py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
               >
+                <ClipboardList
+                  className="h-[17px] w-[17px]"
+                  strokeWidth={1.75}
+                />
                 My orders
               </Link>
               <button
