@@ -1,17 +1,25 @@
-import { Hero } from "@/components/modules/landing/Hero";
-import { FeaturedCollections } from "@/components/modules/landing/FeaturedCollections";
-import { FeaturedProducts } from "@/components/modules/landing/FeaturedProducts";
-import { TrustStrip } from "@/components/modules/landing/TrustStrip";
-import { Newsletter } from "@/components/modules/landing/Newsletter";
+import { AnnouncementBar } from "@/components/landing/AnnouncementBar";
+import { Header } from "@/components/landing/Header";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { FeaturedCategories } from "@/components/landing/FeaturedCategories";
+import { BestSellers } from "@/components/landing/BestSellers";
+import { ValueProposition } from "@/components/landing/ValueProposition";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { NewsletterFooter } from "@/components/landing/NewsletterFooter";
 
 export default function Home() {
   return (
-    <main>
-      <Hero />
-      <FeaturedCollections />
-      <FeaturedProducts />
-      <TrustStrip />
-      <Newsletter />
-    </main>
+    <>
+      <AnnouncementBar />
+      <Header />
+      <main id="main-content">
+        <HeroSection />
+        <FeaturedCategories />
+        <BestSellers />
+        <ValueProposition />
+        <Testimonials />
+      </main>
+      <NewsletterFooter />
+    </>
   );
 }

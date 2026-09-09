@@ -69,6 +69,7 @@ export function AddToCartPanel({ product }: { product: Product }) {
       )}
 
       <button
+        id="main-add-to-cart"
         type="button"
         onClick={handleAdd}
         disabled={adding || outOfStock}
