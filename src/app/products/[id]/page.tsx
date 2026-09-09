@@ -14,7 +14,7 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  console.log("ProductDetailPage params:", params);
+  console.log("ProductDetailPage id:", id);
 
   let product;
   try {
