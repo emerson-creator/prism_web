@@ -35,7 +35,8 @@ const currency = new Intl.NumberFormat("en-US", {
 const STATUS_COLORS: Record<string, string> = {
   PENDING: "#f59e0b",
   PROCESSING: "#6366f1",
-  COMPLETED: "#22c55e",
+  SHIPPED: "#0ea5e9",
+  DELIVERED: "#22c55e",
   CANCELED: "#ef4444",
 };
 

@@ -11,7 +11,11 @@ export function revenueByDay(
   orders: OrderSummary[],
   days = 14,
 ): DailyRevenuePoint[] {
-  const REVENUE_STATUSES: OrderStatus[] = ["PROCESSING", "COMPLETED"];
+  const REVENUE_STATUSES: OrderStatus[] = [
+    "PROCESSING",
+    "SHIPPED",
+    "DELIVERED",
+  ];
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -51,7 +55,8 @@ export interface StatusCount {
 const ALL_STATUSES: OrderStatus[] = [
   "PENDING",
   "PROCESSING",
-  "COMPLETED",
+  "SHIPPED",
+  "DELIVERED",
   "CANCELED",
 ];
 
@@ -121,7 +126,9 @@ export function computeSummary(
   products: Product[],
 ): DashboardSummary {
   const revenueOrders = orders.filter((o) =>
-    (["PROCESSING", "COMPLETED"] as OrderStatus[]).includes(o.status),
+    (["PROCESSING", "SHIPPED", "DELIVERED"] as OrderStatus[]).includes(
+      o.status,
+    ),
   );
   const totalRevenue = revenueOrders.reduce((sum, o) => sum + o.total, 0);
 

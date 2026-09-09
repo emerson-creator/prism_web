@@ -121,7 +121,8 @@ function StatusBadge({ status }: { status: OrderStatus }) {
   const styles: Record<string, string> = {
     PENDING: "bg-amber-50 text-amber-700",
     PROCESSING: "bg-blue-50 text-blue-700",
-    COMPLETED: "bg-green-50 text-green-700",
+    SHIPPED: "bg-sky-50 text-sky-700",
+    DELIVERED: "bg-green-50 text-green-700",
     CANCELED: "bg-red-50 text-red-700",
   };
 
