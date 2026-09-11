@@ -42,6 +42,8 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<OrderSummary | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const activeOrder = order ?? fetchedOrder ?? null;
 
@@ -60,6 +62,24 @@ export default function OrderDetailPage() {
       );
     } finally {
       setIsCancelling(false);
+    }
+  }
+
+  async function handleConfirmDelivery() {
+    if (!activeOrder) return;
+    if (!confirm("Confirm you received this order?")) return;
+
+    setIsConfirming(true);
+    setConfirmError(null);
+    try {
+      const updated = await api.confirmDelivery(activeOrder.id);
+      if (updated) setOrder(updated);
+    } catch (err) {
+      setConfirmError(
+        err instanceof Error ? err.message : "Could not confirm delivery",
+      );
+    } finally {
+      setIsConfirming(false);
     }
   }
 
@@ -172,6 +192,28 @@ export default function OrderDetailPage() {
           </button>
           <p className="mt-2 text-[11.5px] text-muted-foreground">
             You can cancel this order because it hasn&apos;t been processed yet.
+          </p>
+        </div>
+      )}
+
+      {activeOrder.status === "SHIPPED" && (
+        <div className="mt-6 border-t border-border pt-6">
+          {confirmError && (
+            <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-[13px] text-red-600">
+              {confirmError}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={handleConfirmDelivery}
+            disabled={isConfirming}
+            className="flex h-10 items-center gap-2 rounded-full bg-foreground px-5 text-[13px] font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+          >
+            {isConfirming && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {isConfirming ? "Confirming…" : "Confirm delivery"}
+          </button>
+          <p className="mt-2 text-[11.5px] text-muted-foreground">
+            Let us know once your order has arrived.
           </p>
         </div>
       )}
