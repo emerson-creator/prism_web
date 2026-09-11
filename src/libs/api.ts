@@ -495,3 +495,15 @@ export function adminUpdateUser(id: string, payload: AdminUpdateUserPayload) {
 export function adminDeleteUser(id: string) {
   return request<MessageResponse>(`/users/${id}`, { method: "DELETE" });
 }
+
+/**
+ * Confirms delivery of the current user's own order. Backend only
+ * allows this while status is SHIPPED (enforced in OrdersService.confirmDelivery).
+ */
+export async function confirmDelivery(id: string) {
+  const res = await request<ApiResponse<OrderSummary>>(
+    `/orders/${id}/confirm-delivery`,
+    { method: "PATCH" },
+  );
+  return res.data;
+}
