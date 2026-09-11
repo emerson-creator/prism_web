@@ -134,6 +134,14 @@ export function Header() {
                     />
                     My orders
                   </Link>
+                  <Link
+                    href="/profile"
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                  >
+                    <User className="h-[15px] w-[15px]" strokeWidth={1.75} />
+                    Profile
+                  </Link>
                   <button
                     type="button"
                     onClick={handleLogout}
@@ -224,6 +232,14 @@ export function Header() {
                   strokeWidth={1.75}
                 />
                 My orders
+              </Link>
+              <Link
+                href="/profile"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+              >
+                <User className="h-[17px] w-[17px]" strokeWidth={1.75} />
+                Profile
               </Link>
               <button
                 type="button"
