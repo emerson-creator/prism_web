@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const products = [
-  { name: "Cotton crewneck", price: "$48" },
-  { name: "Wool overshirt", price: "$132" },
-  { name: "Straight leg trouser", price: "$96" },
-  { name: "Canvas tote", price: "$38" },
+  { name: "Wireless earbuds", price: "$48" },
+  { name: "Portable power bank", price: "$132" },
+  { name: "Smart desk lamp", price: "$96" },
+  { name: "USB-C hub", price: "$38" },
 ];
 
 export function FeaturedProducts() {
