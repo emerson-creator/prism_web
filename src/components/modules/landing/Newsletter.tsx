@@ -6,7 +6,7 @@ export function Newsletter() {
           Get 10% off your first order
         </h2>
         <p className="mt-2 text-primary-foreground/70">
-          Join the list for new arrivals and early access to sales.
+          Join the list for new tech arrivals and early access to special offers.
         </p>
         <form className="mt-6 flex max-w-sm mx-auto gap-2">
           <input
