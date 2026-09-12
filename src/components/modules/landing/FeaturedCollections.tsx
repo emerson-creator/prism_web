@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const collections = [
-  { name: "New arrivals", description: "This week's drops" },
-  { name: "Everyday basics", description: "Built for repeat wear" },
-  { name: "Outerwear", description: "For the in-between seasons" },
+  { name: "Latest tech", description: "This week's new arrivals" },
+  { name: "Everyday gadgets", description: "Built for daily life" },
+  { name: "Smart accessories", description: "Small upgrades, big impact" },
 ];
 
 export function FeaturedCollections() {
