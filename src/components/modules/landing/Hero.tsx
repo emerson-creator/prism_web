@@ -6,11 +6,11 @@ export function Hero() {
       <div className="container mx-auto px-4 py-20 grid gap-12 md:grid-cols-2 md:items-center">
         <div>
           <h1 className="font-heading text-4xl md:text-5xl font-semibold leading-tight text-foreground">
-            Clarity you can wear.
+            Technology, made clear.
           </h1>
           <p className="mt-5 text-lg text-muted-foreground max-w-md">
-            Prism curates a small, considered selection of everyday essentials —
-            cut clean, made to last, priced fairly.
+            Prism curates smart gadgets and everyday tech essentials —
+            thoughtfully designed, built to last, priced fairly.
           </p>
           <div className="mt-8 flex gap-3">
             <Link
