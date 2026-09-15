@@ -507,3 +507,16 @@ export async function confirmDelivery(id: string) {
   );
   return res.data;
 }
+
+/**
+ * Admin-only: refunds a paid order via Stripe. Backend only allows this
+ * for orders currently in PROCESSING or SHIPPED — rejects with 400
+ * otherwise. Restores stock and cancels the order on success.
+ */
+export async function refundOrder(orderId: string) {
+  const res = await request<ApiResponse<Payment>>(
+    `/payments/order/${orderId}/refund`,
+    { method: "POST" },
+  );
+  return res.data;
+}

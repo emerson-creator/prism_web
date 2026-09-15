@@ -6,6 +6,7 @@ import { useApiFetch } from "@/libs/hooks/useApiFetch";
 import * as api from "@/libs/api";
 import { ORDER_STATUS_TRANSITIONS } from "@/libs/types";
 import type { OrderStatus, OrderSummary } from "@/libs/types";
+import { AlertCircle } from "lucide-react";
 
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -126,6 +127,32 @@ function OrderRow({
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [isRefunding, setIsRefunding] = useState(false);
+  const [refundError, setRefundError] = useState<string | null>(null);
+
+  const canRefund = order.status === "PROCESSING" || order.status === "SHIPPED";
+
+  async function handleRefund() {
+    if (
+      !confirm(
+        `Refund order #${order.orderNumber}? This will refund the payment via Stripe, restore stock, and cancel the order. This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+    setIsRefunding(true);
+    setRefundError(null);
+    try {
+      await api.refundOrder(order.id);
+      onUpdated();
+    } catch (err) {
+      setRefundError(
+        err instanceof Error ? err.message : "Could not process refund",
+      );
+    } finally {
+      setIsRefunding(false);
+    }
+  }
   const [trackingNumber, setTrackingNumber] = useState(
     order.trackingNumber ?? "",
   );
@@ -254,6 +281,29 @@ function OrderRow({
               </p>
             )}
           </div>
+
+          {canRefund && (
+            <div className="mb-4">
+              {refundError && (
+                <p className="mb-2 rounded-lg bg-red-50 px-3 py-2 text-[13px] text-red-600">
+                  {refundError}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={handleRefund}
+                disabled={isRefunding || isSaving}
+                className="flex h-9 items-center gap-2 rounded-full border border-red-200 px-4 text-[12.5px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
+              >
+                <AlertCircle className="h-3.5 w-3.5" strokeWidth={1.75} />
+                {isRefunding ? "Processing refund…" : "Refund & cancel order"}
+              </button>
+              <p className="mt-1.5 text-[11.5px] text-muted-foreground">
+                Refunds the payment via Stripe, restores stock, and cancels the
+                order.
+              </p>
+            </div>
+          )}
 
           <ul className="mb-4 space-y-1.5 rounded-xl bg-background p-3 text-[12.5px]">
             {order.items.map((item) => (
