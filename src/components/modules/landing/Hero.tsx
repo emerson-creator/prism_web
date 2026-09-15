@@ -138,7 +138,7 @@ export function Hero() {
               className="mt-7 flex flex-wrap gap-3"
             >
               <Link
-                href="/catalog"
+                href="/products"
                 className="group inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Shop the catalog
