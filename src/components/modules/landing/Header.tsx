@@ -17,10 +17,9 @@ import { useAuthStore } from "@/store/auth-store";
 import { useCartCount } from "@/store/cart-store";
 
 const NAV_LINKS = [
-  { label: "New", href: "/new" },
-  { label: "Catalog", href: "/products" },
+  { label: "Products", href: "/products" },
   { label: "Collections", href: "/collections" },
-  { label: "About Prism", href: "/us" },
+  { label: "About Prism", href: "/about" },
 ];
 
 export function Header() {
@@ -87,13 +86,13 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-1">
-            <button
+            {/* <button
               type="button"
               aria-label="Search"
               className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <Search className="h-[18px] w-[18px]" strokeWidth={1.75} />
-            </button>
+            </button> */}
 
             {/* Account */}
             <div className="relative hidden sm:block">
