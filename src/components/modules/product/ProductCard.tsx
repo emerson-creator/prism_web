@@ -1,11 +1,13 @@
+// components/modules/product/ProductCard.tsx
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { Product } from "@/libs/types";
 import { useCartStore } from "@/store/cart-store";
 
-const currency = new Intl.NumberFormat("es-CO", {
+const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
@@ -32,11 +34,12 @@ export function ProductCard({ product }: { product: Product }) {
     <Link href={`/products/${product.id}`} className="group flex flex-col">
       <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
         {product.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.imageUrl}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            fill
+            sizes="(min-width: 640px) 33vw, 50vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <ImagePlaceholder />
@@ -44,7 +47,7 @@ export function ProductCard({ product }: { product: Product }) {
 
         {outOfStock && (
           <span className="absolute left-2.5 top-2.5 rounded-full bg-background/90 px-2.5 py-1 text-[11px] font-medium text-muted-foreground backdrop-blur-sm">
-            Sin stock
+            Out of stock
           </span>
         )}
 
@@ -52,10 +55,10 @@ export function ProductCard({ product }: { product: Product }) {
           type="button"
           onClick={handleAdd}
           disabled={adding || outOfStock}
-          aria-label={`Agregar ${product.name} al carrito`}
+          aria-label={`Add ${product.name} to cart`}
           className="absolute bottom-2.5 right-2.5 flex h-9 items-center rounded-full bg-foreground px-3.5 text-[12.5px] font-medium text-background opacity-0 shadow-sm transition-all duration-200 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-0 sm:opacity-100"
         >
-          {justAdded ? "Agregado ✓" : adding ? "Agregando…" : "Agregar"}
+          {justAdded ? "Added ✓" : adding ? "Adding…" : "Add to cart"}
         </button>
       </div>
 

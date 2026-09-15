@@ -1,9 +1,13 @@
+// app/(main)/products/page.tsx
 import { Suspense } from "react";
 import { fetchCategories, fetchProducts } from "@/libs/api";
 import { ProductGrid } from "@/components/modules/product/ProductGrid";
 import { ProductFilters } from "@/components/modules/product/ProductFilters";
+import { Pagination } from "@/components/modules/product/Pagination";
 
 export const revalidate = 60;
+
+const PAGE_SIZE = 18;
 
 interface ProductsPageProps {
   searchParams: Promise<{ search?: string; category?: string; page?: string }>;
@@ -12,20 +16,22 @@ interface ProductsPageProps {
 export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
-  const { search, category, page } = await searchParams;
+  const { search, category, page: pageParam } = await searchParams;
+  const page = pageParam ? Number(pageParam) : 1;
 
   const [{ data: products, meta }, categoriesResponse] = await Promise.all([
     fetchProducts({
       search,
       category,
-      page: page ? Number(page) : undefined,
-      limit: 24,
+      page,
+      limit: PAGE_SIZE,
       isActive: true,
     }),
     fetchCategories({ limit: 100 }),
   ]);
 
   const hasFilters = !!(search || category);
+  const totalPages = Math.max(1, Math.ceil(meta.totalItems / PAGE_SIZE));
 
   return (
     <main className="container mx-auto px-4 py-10">
@@ -54,7 +60,14 @@ export default async function ProductsPage({
             </p>
           </div>
         ) : (
-          <ProductGrid products={products} />
+          <>
+            <ProductGrid products={products} />
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              searchParams={{ search, category }}
+            />
+          </>
         )}
       </div>
     </main>
