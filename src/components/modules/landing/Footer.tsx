@@ -1,83 +1,68 @@
 import Link from "next/link";
 
-const footerLinks = [
-  {
-    heading: "Shop",
-    links: [
-      { label: "New arrivals", href: "/catalog?sort=new" },
-      { label: "Catalog", href: "/catalog" },
-      { label: "Collections", href: "/collections" },
-    ],
-  },
-  {
-    heading: "Company",
-    links: [
-      { label: "About Prism", href: "/about" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    heading: "Support",
-    links: [
-      { label: "Shipping & returns", href: "/shipping" },
-      { label: "Track an order", href: "/orders" },
-    ],
-  },
+const FOOTER_LINKS = [
+  { label: "Products", href: "/products" },
+  { label: "Collections", href: "/collections" },
+  { label: "About Prism", href: "/about" },
+  { label: "My orders", href: "/orders" },
 ];
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground">
-      <div className="container mx-auto px-4 py-14">
-        <div className="grid gap-10 md:grid-cols-[1.2fr_repeat(3,1fr)]">
-          <div>
-            <p className="font-heading text-lg font-semibold">Prism</p>
-            <p className="mt-2 text-sm text-primary-foreground/70 max-w-xs">
-              Smart gadgets and everyday tech essentials, thoughtfully designed
-              and priced fairly.
-            </p>
-            <form className="mt-5 flex max-w-xs gap-2">
-              <input
-                type="email"
-                required
-                placeholder="you@email.com"
-                className="flex-1 min-w-0 rounded-md bg-primary-foreground/10 border border-primary-foreground/20 px-3 py-2 text-sm placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent"
-              />
-              <button
-                type="submit"
-                className="shrink-0 rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:bg-accent/90 transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
-            <p className="mt-2 text-xs text-primary-foreground/50">
-              10% off your first order. No spam.
-            </p>
-          </div>
+    <footer className="border-t border-border bg-background">
+      <div className="container mx-auto px-4 py-10">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5"
+            aria-label="Prism — home"
+          >
+            <PrismMark />
+            <span className="font-heading text-[1.05rem] font-semibold tracking-tight text-foreground">
+              Prism
+            </span>
+          </Link>
 
-          {footerLinks.map((col) => (
-            <div key={col.heading}>
-              <p className="text-sm font-medium">{col.heading}</p>
-              <ul className="mt-4 space-y-2">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <Link
-                      href={l.href}
-                      className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {FOOTER_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
 
-        <div className="mt-12 border-t border-primary-foreground/10 pt-6 text-sm text-primary-foreground/50">
+        <div className="mt-8 border-t border-border pt-6 text-xs text-muted-foreground">
           &copy; {new Date().getFullYear()} Prism Store. All rights reserved.
         </div>
       </div>
     </footer>
+  );
+}
+
+/** Same monochrome mark as the header, without the hover reveal — quiet here on purpose. */
+function PrismMark() {
+  return (
+    <svg
+      width="22"
+      height="20"
+      viewBox="0 0 26 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="shrink-0"
+    >
+      <path
+        d="M9 12L1 12"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        className="text-foreground/40"
+      />
+      <path d="M9 3L16.5 12L9 21Z" className="fill-foreground/80" />
+    </svg>
   );
 }

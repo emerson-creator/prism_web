@@ -30,10 +30,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-sans bg-background text-foreground antialiased">
+      <body className="flex min-h-screen flex-col font-sans bg-background text-foreground antialiased">
         <Providers>
           <Header />
-          {children}
+
+          <div className="flex-1">{children}</div>
           <Footer />
         </Providers>
       </body>

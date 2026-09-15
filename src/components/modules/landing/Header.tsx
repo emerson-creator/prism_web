@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Search,
   ShoppingBag,
   User,
   Menu,
@@ -26,6 +26,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const cartCount = useCartCount();
@@ -40,6 +41,26 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    function onPointerDown(e: MouseEvent) {
+      if (!accountMenuRef.current?.contains(e.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setAccountMenuOpen(false);
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [accountMenuOpen]);
 
   async function handleLogout() {
     setAccountMenuOpen(false);
@@ -86,88 +107,95 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-1">
-            {/* <button
-              type="button"
-              aria-label="Search"
-              className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              <Search className="h-[18px] w-[18px]" strokeWidth={1.75} />
-            </button> */}
-
             {/* Account */}
-            <div className="relative hidden sm:block">
-              <button
-                type="button"
-                aria-label={isAuthenticated ? "Account menu" : "Sign in"}
-                onClick={() => {
-                  if (!isHydrated) return;
-                  if (!isAuthenticated) {
-                    router.push("/login");
-                    return;
-                  }
-                  setAccountMenuOpen((v) => !v);
-                }}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              >
-                <User className="h-[18px] w-[18px]" strokeWidth={1.75} />
-              </button>
-
-              {accountMenuOpen && isAuthenticated && (
-                <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-border bg-background py-1.5 shadow-lg">
-                  <div className="border-b border-border/70 px-3.5 py-2.5">
-                    <p className="truncate text-[13px] font-medium text-foreground">
-                      {user?.name} {user?.lastName}
-                    </p>
-                    <p className="truncate text-[12px] text-muted-foreground">
-                      {user?.email}
-                    </p>
-                  </div>
-                  <Link
-                    href="/orders"
-                    onClick={() => setAccountMenuOpen(false)}
-                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
-                  >
-                    <ClipboardList
-                      className="h-[15px] w-[15px]"
-                      strokeWidth={1.75}
-                    />
-                    My orders
-                  </Link>
-                  <Link
-                    href="/profile"
-                    onClick={() => setAccountMenuOpen(false)}
-                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
-                  >
-                    <User className="h-[15px] w-[15px]" strokeWidth={1.75} />
-                    Profile
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
-                  >
-                    <LogOut className="h-[15px] w-[15px]" strokeWidth={1.75} />
-                    Sign out
-                  </button>
-
-                  {user?.Role === "ADMIN" && (
-                    <>
-                      <div className="border-t border-border/70 my-1" />
-                      <Link
-                        href="/admin"
-                        onClick={() => setAccountMenuOpen(false)}
-                        className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
-                      >
-                        <ShieldCheck
-                          className="h-[15px] w-[15px]"
-                          strokeWidth={1.75}
-                        />
-                        Admin panel
-                      </Link>
-                    </>
-                  )}
-                </div>
+            <div className="relative hidden sm:block" ref={accountMenuRef}>
+              {!isHydrated ? (
+                <div className="h-9 w-9" aria-hidden />
+              ) : !isAuthenticated ? (
+                <Link
+                  href="/login"
+                  className="flex h-9 items-center rounded-full px-3.5 text-[13.5px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  Sign in
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  aria-label="Account menu"
+                  onClick={() => setAccountMenuOpen((v) => !v)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                >
+                  <User className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                </button>
               )}
+
+              <AnimatePresence>
+                {accountMenuOpen && isAuthenticated && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="absolute right-0 top-full mt-2 w-48 origin-top-right rounded-xl border border-border bg-background py-1.5 shadow-lg"
+                  >
+                    <div className="border-b border-border/70 px-3.5 py-2.5">
+                      <p className="truncate text-[13px] font-medium text-foreground">
+                        {user?.name} {user?.lastName}
+                      </p>
+                      <p className="truncate text-[12px] text-muted-foreground">
+                        {user?.email}
+                      </p>
+                    </div>
+                    <Link
+                      href="/orders"
+                      onClick={() => setAccountMenuOpen(false)}
+                      className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                    >
+                      <ClipboardList
+                        className="h-[15px] w-[15px]"
+                        strokeWidth={1.75}
+                      />
+                      My orders
+                    </Link>
+                    <Link
+                      href="/profile"
+                      onClick={() => setAccountMenuOpen(false)}
+                      className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                    >
+                      <User className="h-[15px] w-[15px]" strokeWidth={1.75} />
+                      Profile
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                    >
+                      <LogOut
+                        className="h-[15px] w-[15px]"
+                        strokeWidth={1.75}
+                      />
+                      Sign out
+                    </button>
+
+                    {user?.Role === "ADMIN" && (
+                      <>
+                        <div className="my-1 border-t border-border/70" />
+                        <Link
+                          href="/admin"
+                          onClick={() => setAccountMenuOpen(false)}
+                          className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                        >
+                          <ShieldCheck
+                            className="h-[15px] w-[15px]"
+                            strokeWidth={1.75}
+                          />
+                          Admin panel
+                        </Link>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <Link
@@ -213,7 +241,7 @@ export function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+              className="border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
             >
               {link.label}
             </Link>
@@ -224,7 +252,7 @@ export function Header() {
               <Link
                 href="/orders"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+                className="flex items-center gap-2 border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
               >
                 <ClipboardList
                   className="h-[17px] w-[17px]"
@@ -235,7 +263,7 @@ export function Header() {
               <Link
                 href="/profile"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 py-3 text-[15px] font-medium text-foreground/90 border-b border-border/70"
+                className="flex items-center gap-2 border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
               >
                 <User className="h-[17px] w-[17px]" strokeWidth={1.75} />
                 Profile
