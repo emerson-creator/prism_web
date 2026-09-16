@@ -19,8 +19,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Prism | Ecommerce",
-  description: "Ecommerce made with Next.js",
+  title: "Prism",
+  description:
+    "See technology, refracted clearly. Discover smart gadgets and tech essentials for everyday life.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

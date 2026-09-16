@@ -3,6 +3,8 @@ import { FeaturedCollections } from "@/components/modules/landing/FeaturedCollec
 import { FeaturedProducts } from "@/components/modules/landing/FeaturedProducts";
 import { TrustStrip } from "@/components/modules/landing/TrustStrip";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <main>

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { fetchProductById } from "@/libs/api";
 import { AddToCartPanel } from "@/components/modules/product/AddToCartPanel";
 
+export const dynamic = "force-dynamic";
+
 const currency = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",

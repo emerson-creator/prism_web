@@ -2,7 +2,7 @@
 import { fetchCategories } from "@/libs/api";
 import { CollectionsGrid } from "@/components/modules/collections/CollectionsGrid";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function CollectionsPage() {
   const { data: categories } = await fetchCategories({ limit: 100 });

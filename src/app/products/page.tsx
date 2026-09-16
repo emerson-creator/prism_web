@@ -5,7 +5,7 @@ import { ProductGrid } from "@/components/modules/product/ProductGrid";
 import { ProductFilters } from "@/components/modules/product/ProductFilters";
 import { Pagination } from "@/components/modules/product/Pagination";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 18;
 
