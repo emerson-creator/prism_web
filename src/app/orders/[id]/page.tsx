@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useApiFetch } from "@/libs/hooks/useApiFetch";
@@ -24,7 +24,6 @@ const dateFormat = new Intl.DateTimeFormat("en-US", {
 
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const isHydrated = useAuthStore((s) => s.isHydrated);
   const user = useAuthStore((s) => s.user);
 

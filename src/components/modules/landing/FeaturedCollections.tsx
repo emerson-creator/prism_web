@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { fetchCategories } from "@/libs/api";
 import { AnimatedCollectionsGrid } from "./AnimatedCollectionsGrid";
 
