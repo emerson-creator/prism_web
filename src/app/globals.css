@@ -80,3 +80,9 @@
 .animate-fade-up {
   animation: fade-up 0.6s ease-out both;
 }
+
+@import "tailwindcss";
+
+@theme {
+  --breakpoint-hero: 1100px;
+}

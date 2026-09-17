@@ -18,78 +18,73 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden border-b border-border">
-      {/* Single full-bleed stage: person on the left, gaze crossing into the
-          text on the right — the headset's line of sight is the layout's
-          organizing device, echoing the beam mark's split-light motif. */}
-      <motion.div
-        ref={imageRef}
-        initial={{ opacity: 0, scale: 1.04 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="relative h-[92vh] min-h-[640px] w-full overflow-hidden"
-      >
-        <motion.div style={{ y }} className="absolute inset-0">
-          <Image
-            src="/hero__.jpg"
-            alt="Person wearing Prism headphones, facing right toward the headline"
-            fill
-            priority
-            sizes="100vw"
-            className="scale-x-[-1] object-cover object-[68%_top]"
+      <div className="relative flex flex-col hero:block hero:h-[92vh] hero:min-h-[640px]">
+        <motion.div
+          ref={imageRef}
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="relative h-[42vh] min-h-[300px] w-full overflow-hidden hero:absolute hero:inset-0 hero:h-full hero:min-h-0"
+        >
+          <motion.div style={{ y }} className="absolute inset-0">
+            <Image
+              src="/hero__.jpg"
+              alt="Person wearing Prism headphones, facing right toward the headline"
+              fill
+              priority
+              sizes="100vw"
+              className="scale-x-[-1] object-cover object-[50%_top] hero:object-[68%_top]"
+            />
+          </motion.div>
+
+          {/* Scrims only make sense once text sits on top of the image —
+              desktop only */}
+          <div className="hidden hero:block absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-background/70 to-transparent" />
+          <div className="hidden hero:block absolute inset-y-0 right-0 w-[58%] bg-gradient-to-l from-background via-background/85 to-transparent" />
+          <div className="hidden hero:block absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background/60 to-transparent" />
+
+          {/* Spectrum glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-[8%] top-[38%] h-72 w-72 opacity-50 blur-3xl hero:left-[14%]"
+            style={{
+              background:
+                "radial-gradient(closest-side, #6366f1 0%, #ec4899 45%, #f59e0b 75%, transparent 100%)",
+            }}
           />
+
+          {/* Gaze line — desktop only, needs the wide overlay stage */}
+          <svg
+            aria-hidden
+            className="pointer-events-none absolute inset-0 hidden h-full w-full hero:block"
+            preserveAspectRatio="none"
+          >
+            <motion.line
+              x1="30%"
+              y1="30%"
+              x2="58%"
+              y2="24%"
+              stroke="url(#gazeGradient)"
+              strokeWidth="1.5"
+              strokeDasharray="1 7"
+              strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 0.9, delay: 1.1, ease: "easeOut" }}
+            />
+            <defs>
+              <linearGradient id="gazeGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+          </svg>
         </motion.div>
 
-        {/* Left-side scrim so the header stays legible over hair/shoulder */}
-        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-background/70 to-transparent" />
-
-        {/* Right-side scrim — this is what lets type sit directly in the
-            frame the headset is "looking" into, rather than beside it */}
-        <div className="absolute inset-y-0 right-0 w-[58%] bg-gradient-to-l from-background via-background/85 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background/60 to-transparent" />
-
-        {/* Spectrum glow — positioned at the lens, along the sightline */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-[8%] top-[38%] h-72 w-72 opacity-50 blur-3xl md:left-[14%]"
-          style={{
-            background:
-              "radial-gradient(closest-side, #6366f1 0%, #ec4899 45%, #f59e0b 75%, transparent 100%)",
-          }}
-        />
-
-        {/* Gaze line: a thin traced path from the headset toward the
-            headline, appearing after the type lands, reinforcing the
-            "sees the words" idea without being literal or gimmicky */}
-        <svg
-          aria-hidden
-          className="pointer-events-none absolute inset-0 hidden h-full w-full md:block"
-          preserveAspectRatio="none"
-        >
-          <motion.line
-            x1="30%"
-            y1="30%"
-            x2="58%"
-            y2="24%"
-            stroke="url(#gazeGradient)"
-            strokeWidth="1.5"
-            strokeDasharray="1 7"
-            strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 0.9, delay: 1.1, ease: "easeOut" }}
-          />
-          <defs>
-            <linearGradient id="gazeGradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-
-        {/* Text column — pulled up into the clear space above the headset
-            and narrowed so the headline never sits on top of the lens */}
-        <div className="relative z-10 flex h-full items-start justify-end px-6 pt-[14vh] md:pl-[56%] md:pr-14 md:pt-[16vh] lg:pr-20">
-          <div className="max-w-xs md:max-w-sm">
+        {/* Text column — flows below the image on mobile with a solid
+            background; becomes the absolute overlay column on desktop */}
+        <div className="relative z-10 bg-background px-6 py-10 hero:absolute hero:inset-0 hero:flex hero:h-full hero:items-start hero:justify-end hero:bg-transparent hero:py-0 hero:pl-[56%] hero:pr-14 hero:pt-[16vh] lg:pr-20">
+          <div className="max-w-xs hero:max-w-sm">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -125,7 +120,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-5 max-w-xs text-base text-muted-foreground md:text-lg"
+              className="mt-5 max-w-xs text-base text-muted-foreground hero:text-lg"
             >
               Prism curates smart gadgets and everyday tech essentials —
               thoughtfully designed, built to last, priced fairly.
@@ -166,16 +161,11 @@ export function Hero() {
             </motion.div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
 
-/**
- * Beam mark: the hero-scale echo of the header's Prism logo — a single
- * line splitting into the three spectrum colors, always "on" here
- * (rather than a hover reveal) to anchor the headline.
- */
 function BeamMark() {
   return (
     <svg
