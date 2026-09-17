@@ -33,10 +33,8 @@ import type {
 
 const API_URL =
   typeof window === "undefined"
-    ? (process.env.INTERNAL_API_URL ??
-      process.env.NEXT_PUBLIC_API_URL ??
-      "http://localhost:3000/api/v1")
-    : (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1");
+    ? (process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL)
+    : process.env.NEXT_PUBLIC_API_URL;
 
 /** Thrown when the user has no valid session at all (no token, or refresh also failed). */
 export class UnauthenticatedError extends Error {
