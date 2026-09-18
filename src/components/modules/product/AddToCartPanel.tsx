@@ -45,7 +45,7 @@ export function AddToCartPanel({ product }: { product: Product }) {
               aria-label="Decrease quantity"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
               disabled={quantity <= 1}
-              className="flex h-9 w-9 items-center justify-center text-foreground/70 transition-colors hover:text-foreground disabled:opacity-30"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center text-foreground/70 transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" strokeWidth={2} />
             </button>
@@ -57,7 +57,7 @@ export function AddToCartPanel({ product }: { product: Product }) {
               aria-label="Increase quantity"
               onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
               disabled={maxReached}
-              className="flex h-9 w-9 items-center justify-center text-foreground/70 transition-colors hover:text-foreground disabled:opacity-30"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center text-foreground/70 transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" strokeWidth={2} />
             </button>
@@ -72,7 +72,7 @@ export function AddToCartPanel({ product }: { product: Product }) {
         type="button"
         onClick={handleAdd}
         disabled={adding || outOfStock}
-        className="flex h-12 w-full items-center justify-center rounded-full bg-foreground text-[14px] font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex h-12 w-full cursor-pointer items-center justify-center rounded-full bg-foreground text-[14px] font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {outOfStock
           ? "Out of stock"
@@ -88,7 +88,7 @@ export function AddToCartPanel({ product }: { product: Product }) {
           <button
             type="button"
             onClick={() => router.push("/login")}
-            className="font-medium text-foreground underline underline-offset-2"
+            className="cursor-pointer font-medium text-foreground underline underline-offset-2"
           >
             Sign in
           </button>{" "}
