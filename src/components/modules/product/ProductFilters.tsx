@@ -71,7 +71,7 @@ export function ProductFilters({ categories }: { categories: Category[] }) {
                 router.replace("/products", { scroll: false }),
               );
             }}
-            className="ml-1 text-[12px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
+            className="ml-1 cursor-pointer text-[12px] font-medium text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
             Clear
           </button>
@@ -134,7 +134,7 @@ function SearchInput({
         type="button"
         aria-label="Clear search"
         onClick={clearSearch}
-        className="absolute right-2.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+        className="absolute right-2.5 top-1/2 flex h-5 w-5 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
       >
         <X className="h-3.5 w-3.5" strokeWidth={2} />
       </button>
@@ -156,7 +156,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-full px-3 py-1.5 text-[12.5px] font-medium transition-colors",
+        "cursor-pointer rounded-full px-3 py-1.5 text-[12.5px] font-medium transition-colors",
         active
           ? "bg-foreground text-background"
           : "bg-muted text-muted-foreground hover:text-foreground",

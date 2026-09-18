@@ -31,7 +31,10 @@ export function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <Link href={`/products/${product.id}`} className="group flex flex-col">
+    <Link
+      href={`/products/${product.id}`}
+      className="group flex cursor-pointer flex-col"
+    >
       <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted">
         {product.imageUrl ? (
           <Image
@@ -56,7 +59,7 @@ export function ProductCard({ product }: { product: Product }) {
           onClick={handleAdd}
           disabled={adding || outOfStock}
           aria-label={`Add ${product.name} to cart`}
-          className="absolute bottom-2.5 right-2.5 flex h-9 items-center rounded-full bg-foreground px-3.5 text-[12.5px] font-medium text-background opacity-0 shadow-sm transition-all duration-200 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-0 sm:opacity-100"
+          className="absolute bottom-2.5 right-2.5 flex h-9 cursor-pointer items-center rounded-full bg-foreground px-3.5 text-[12.5px] font-medium text-background opacity-0 shadow-sm transition-all duration-200 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-0 sm:opacity-100"
         >
           {justAdded ? "Added ✓" : adding ? "Adding…" : "Add to cart"}
         </button>

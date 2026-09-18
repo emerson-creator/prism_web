@@ -44,7 +44,7 @@ export function Pagination({
                 href={buildHref(p, searchParams)}
                 aria-current={p === page ? "page" : undefined}
                 className={[
-                  "flex h-8 w-8 items-center justify-center rounded-full text-sm transition-colors",
+                  "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-sm transition-colors",
                   p === page
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground",
@@ -95,7 +95,7 @@ function EdgeLink({
     <Link
       href={buildHref(page, searchParams)}
       className={[
-        "group flex items-center gap-1.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground",
+        "group flex cursor-pointer items-center gap-1.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground",
         direction === "next" && "flex-row-reverse",
       ].join(" ")}
     >
