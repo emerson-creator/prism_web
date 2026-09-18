@@ -14,7 +14,7 @@ export function Footer() {
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <Link
             href="/"
-            className="flex items-center gap-2.5"
+            className="flex cursor-pointer items-center gap-2.5"
             aria-label="Prism — home"
           >
             <PrismMark />
@@ -28,7 +28,7 @@ export function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
               </Link>

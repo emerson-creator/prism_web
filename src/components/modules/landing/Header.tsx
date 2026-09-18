@@ -82,7 +82,7 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="group flex items-center gap-2.5 shrink-0"
+            className="group flex shrink-0 cursor-pointer items-center gap-2.5"
             aria-label="Prism — home"
           >
             <PrismMark />
@@ -97,7 +97,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="group relative py-2 text-[13.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="group relative cursor-pointer py-2 text-[13.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
                 <span className="pointer-events-none absolute left-0 -bottom-0.5 h-px w-0 bg-foreground transition-all duration-300 group-hover:w-full" />
@@ -114,7 +114,7 @@ export function Header() {
               ) : !isAuthenticated ? (
                 <Link
                   href="/login"
-                  className="flex h-9 items-center rounded-full px-3.5 text-[13.5px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+                  className="flex h-9 cursor-pointer items-center rounded-full px-3.5 text-[13.5px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
                 >
                   Sign in
                 </Link>
@@ -123,7 +123,7 @@ export function Header() {
                   type="button"
                   aria-label="Account menu"
                   onClick={() => setAccountMenuOpen((v) => !v)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                   <User className="h-[18px] w-[18px]" strokeWidth={1.75} />
                 </button>
@@ -149,7 +149,7 @@ export function Header() {
                     <Link
                       href="/orders"
                       onClick={() => setAccountMenuOpen(false)}
-                      className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                      className="flex w-full cursor-pointer items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
                     >
                       <ClipboardList
                         className="h-[15px] w-[15px]"
@@ -160,7 +160,7 @@ export function Header() {
                     <Link
                       href="/profile"
                       onClick={() => setAccountMenuOpen(false)}
-                      className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                      className="flex w-full cursor-pointer items-center gap-2 px-3.5 py-2.5 text-[13px] text-foreground/80 transition-colors hover:bg-muted"
                     >
                       <User className="h-[15px] w-[15px]" strokeWidth={1.75} />
                       Profile
@@ -168,7 +168,7 @@ export function Header() {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                      className="flex w-full cursor-pointer items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
                     >
                       <LogOut
                         className="h-[15px] w-[15px]"
@@ -183,7 +183,7 @@ export function Header() {
                         <Link
                           href="/admin"
                           onClick={() => setAccountMenuOpen(false)}
-                          className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
+                          className="flex w-full cursor-pointer items-center gap-2 px-3.5 py-2.5 text-left text-[13px] text-foreground/80 transition-colors hover:bg-muted"
                         >
                           <ShieldCheck
                             className="h-[15px] w-[15px]"
@@ -201,7 +201,7 @@ export function Header() {
             <Link
               href="/cart"
               aria-label={`Cart, ${cartCount} items`}
-              className="relative flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.75} />
               {cartCount > 0 && (
@@ -216,7 +216,7 @@ export function Header() {
               type="button"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               onClick={() => setMobileOpen((v) => !v)}
-              className="ml-1 flex h-9 w-9 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="ml-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-muted hover:text-foreground md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               {mobileOpen ? (
                 <X className="h-5 w-5" strokeWidth={1.75} />
@@ -241,7 +241,7 @@ export function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
+              className="cursor-pointer border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
             >
               {link.label}
             </Link>
@@ -252,7 +252,7 @@ export function Header() {
               <Link
                 href="/orders"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
+                className="flex cursor-pointer items-center gap-2 border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
               >
                 <ClipboardList
                   className="h-[17px] w-[17px]"
@@ -263,7 +263,7 @@ export function Header() {
               <Link
                 href="/profile"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
+                className="flex cursor-pointer items-center gap-2 border-b border-border/70 py-3 text-[15px] font-medium text-foreground/90"
               >
                 <User className="h-[17px] w-[17px]" strokeWidth={1.75} />
                 Profile
@@ -271,7 +271,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="py-3 text-left text-[15px] font-medium text-foreground/90"
+                className="cursor-pointer py-3 text-left text-[15px] font-medium text-foreground/90"
               >
                 Sign out
               </button>
@@ -280,7 +280,7 @@ export function Header() {
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="py-3 text-[15px] font-medium text-foreground/90"
+              className="cursor-pointer py-3 text-[15px] font-medium text-foreground/90"
             >
               Sign in
             </Link>
