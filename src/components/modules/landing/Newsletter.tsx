@@ -6,7 +6,8 @@ export function Newsletter() {
           Get 10% off your first order
         </h2>
         <p className="mt-2 text-primary-foreground/70">
-          Join the list for new tech arrivals and early access to special offers.
+          Join the list for new tech arrivals and early access to special
+          offers.
         </p>
         <form className="mt-6 flex max-w-sm mx-auto gap-2">
           <input
@@ -17,7 +18,7 @@ export function Newsletter() {
           />
           <button
             type="submit"
-            className="rounded-md bg-accent px-5 py-2 text-sm font-medium text-accent-foreground hover:bg-accent/90 transition-colors"
+            className="cursor-pointer rounded-md bg-accent px-5 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90"
           >
             Subscribe
           </button>

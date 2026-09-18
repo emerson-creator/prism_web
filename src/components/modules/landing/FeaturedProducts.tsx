@@ -18,7 +18,7 @@ export async function FeaturedProducts() {
           </h2>
           <Link
             href="/products"
-            className="group inline-flex items-center gap-1.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+            className="group inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
           >
             View all
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

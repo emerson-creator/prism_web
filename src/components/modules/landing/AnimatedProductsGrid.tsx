@@ -32,7 +32,10 @@ export function AnimatedProductsGrid({ products }: { products: Product[] }) {
     >
       {products.map((p) => (
         <motion.div key={p.id} variants={item}>
-          <Link href={`/products/${p.id}`} className="group block">
+          <Link
+            href={`/products/${p.id}`}
+            className="group block cursor-pointer"
+          >
             <div className="relative aspect-square overflow-hidden rounded-md border border-border bg-background transition-colors duration-300 group-hover:border-foreground/30">
               {p.imageUrl && (
                 <Image

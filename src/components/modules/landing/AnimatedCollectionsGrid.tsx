@@ -44,7 +44,7 @@ export function AnimatedCollectionsGrid({
           <motion.div key={category.id} variants={itemVariants}>
             <Link
               href={`/products?category=${encodeURIComponent(category.name)}`}
-              className="group block"
+              className="group block cursor-pointer"
               style={{ ["--accent" as string]: accent }}
             >
               <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-border bg-muted transition-colors duration-300 group-hover:border-[color:var(--accent)]/40">
