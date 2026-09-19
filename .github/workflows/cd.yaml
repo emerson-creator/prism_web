@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -26,7 +28,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: emersonic/prism-ecommerce-web:latest
+          tags: |
+            emersonic/prism-ecommerce-web:${{ github.event.workflow_run.head_sha }}
+            emersonic/prism-ecommerce-web:latest
           build-args: |
             NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
             NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
@@ -42,8 +46,116 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+
           script: |
             cd ~/prism
-            docker compose pull web
-            docker compose up -d web
+
+            NEW_TAG="${{ github.event.workflow_run.head_sha }}"
+
+            RETRIES=10
+            DELAY=3
+            SUCCESS=0
+
+            echo "New frontend version: $NEW_TAG"
+
+            # ----------------------------------------
+            # 1. Get current version
+            # ----------------------------------------
+
+            if [ -f .current_web_tag ]; then
+              PREVIOUS_TAG=$(cat .current_web_tag)
+            else
+              PREVIOUS_TAG="latest"
+            fi
+
+            echo "Previous frontend version: $PREVIOUS_TAG"
+
+            # ----------------------------------------
+            # 2. Pull new image
+            # ----------------------------------------
+
+            WEB_TAG="$NEW_TAG" docker compose pull web
+
+            # ----------------------------------------
+            # 3. Deploy new version
+            # ----------------------------------------
+
+            WEB_TAG="$NEW_TAG" docker compose up -d web
+
+            echo "Waiting for frontend..."
+
+            # ----------------------------------------
+            # 4. Health check
+            # ----------------------------------------
+
+            for i in $(seq 1 $RETRIES); do
+
+              if curl --fail -s http://localhost:3001/ > /dev/null; then
+                echo "Frontend health check successful on attempt $i!"
+                SUCCESS=1
+                break
+              fi
+
+              echo "Attempt $i/$RETRIES: Frontend not ready. Retrying in ${DELAY}s..."
+              sleep $DELAY
+
+            done
+
+            # ----------------------------------------
+            # 5. Deployment failed
+            # ----------------------------------------
+
+            if [ $SUCCESS -eq 0 ]; then
+
+              echo "Frontend deployment failed."
+
+              echo "===== FAILED FRONTEND LOGS ====="
+              docker logs prism-web-1 --tail 200 || true
+              echo "===== END FAILED FRONTEND LOGS ====="
+
+              echo "Starting rollback to $PREVIOUS_TAG..."
+
+              # Pull previous image
+              WEB_TAG="$PREVIOUS_TAG" docker compose pull web
+
+              # Recreate container using previous version
+              WEB_TAG="$PREVIOUS_TAG" docker compose up -d web
+
+              echo "Checking rollback..."
+
+              ROLLBACK_SUCCESS=0
+
+              for i in $(seq 1 $RETRIES); do
+
+                if curl --fail -s http://localhost:3001/ > /dev/null; then
+                  echo "Rollback successful."
+                  ROLLBACK_SUCCESS=1
+                  break
+                fi
+
+                echo "Rollback attempt $i/$RETRIES..."
+                sleep $DELAY
+
+              done
+
+              if [ $ROLLBACK_SUCCESS -eq 1 ]; then
+                echo "$PREVIOUS_TAG" > .current_web_tag
+                echo "Frontend restored to $PREVIOUS_TAG."
+              else
+                echo "CRITICAL: Frontend rollback also failed."
+              fi
+
+              # Deployment is still considered failed
+              exit 1
+            fi
+
+            # ----------------------------------------
+            # 6. Deployment successful
+            # ----------------------------------------
+
+            echo "$NEW_TAG" > .current_web_tag
+
+            echo "Frontend deployment successful."
+            echo "Current frontend version: $NEW_TAG"
+
             docker image prune -f
